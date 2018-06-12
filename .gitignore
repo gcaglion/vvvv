@@ -1,0 +1,31 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+*.pch
+*.ipch
+*.suo
+*.tlog
+*.log
+*.obj
+*?db
+*.enc
+
+x64/*
+Win32/*
+.vs/*
+ipch/*
+*.VS*
+
+# MT4 stuff
+*.ex4
+*.utf8
+/~$Tester.xlsm
+/~$Tester_Multi.xlsm
+
+# c# stuff
+TemporaryGeneratedFile*
+MyGUI/bin/*
+MyGUI/obj/*
+/MyCU/temp
+/~*.xlsx
