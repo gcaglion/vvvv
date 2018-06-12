@@ -20,7 +20,7 @@ struct sParmMgr :s1 {
 	int p2;
 	tFileInfo* parmsFile=nullptr;
 
-	sParmMgr(s0Name* name_, s0* parent_, sDbg* dbg_, s1Parms* cParms_) : s1(name_, parent_, dbg_, cParms_) {
+	sParmMgr(s0Name* name_, s0* parent_, sDbg* dbg_, s1parms* cParms_) : s1(name_, parent_, dbg_, cParms_) {
 
 		//cmdprep("open parameters file %s/%s for read", parmsFilePath_, parmsFileName_);
 		//cmdrun(parmsFile=new tFileInfo(this, parmsFileName_, parmsFilePath_, FILE_MODE_READ));
@@ -56,32 +56,9 @@ struct sRoot : s1 {
 		char* xmlfname="rootparms.xml";
 		char* xmlfpath="C:/temp";
 		
-		s1Parms* pppp=new s1Parms("sParmMgr", "%s, %s", xmlfname, xmlfpath);
+		s1parms* sp1= new s1parms(true, "%s, %s");
+
 		//safespwn<sParmMgr>(XMLparms, new s0Name("rootXMLparms_%d", 88), nullptr, new s1Parms("sParmMgr", "%s, %s", xmlfname, xmlfpath), __func__);
-		safespwn<sParmMgr>(XMLparms, new s0Name("rootXMLparms_%d", 88), nullptr, pppp, __func__);
-		/*
-		try {
-			dbg->out(OBJ_MSG_INFO, __func__, trymsg);
-			XMLparms=new sParmMgr(new s0Name("rootXMLparms_%d", 88), this, nullptr, new s1Parms("%s, %s", xmlfname, xmlfpath));
-			dbg->out(OBJ_MSG_INFO, __func__, successmsg);
-		}
-		catch (std::exception exc) {
-			dbg->out(OBJ_MSG_ERR, __func__, failuremask, exc.what());
-			throw std::exception(dbg->msg);
-		}
-*/
-	//-- Original
-/*
-	try {
-			dbg->out(OBJ_MSG_INFO, __func__, "TRYING : spawn XMLparms(%s/%s)", xmlfpath, xmlfname);
-			XMLparms=new sParmMgr(new s0Name("rootXMLparms_%d", 88), this, nullptr, xmlfname, xmlfpath);
-			dbg->out(OBJ_MSG_INFO, __func__, "SUCCESS: spawn XMLparms(%s/%s)", xmlfpath, xmlfname);
-		}
-		catch (std::exception exc) {
-			dbg->out(OBJ_MSG_ERR, __func__, "FAILURE: spawn XMLparms(%s/%s). Exception: %s", xmlfpath, xmlfname, exc.what());
-			throw std::exception(dbg->msg);
-		}
-*/
 	}
 
 	~sRoot() {
@@ -92,11 +69,21 @@ struct sRoot : s1 {
 
 
 int main(int argc, char* argv[]) {
-	int ret;
+	int ret=3;
+	int* retp=&ret;
 
+	s1parms* sp1= new s1parms(false, "%s, %s");
+	sp1->fill("blah", "kaz");
+	s1parms* sp1f= new s1parms(true, "%s, %s", "blah", "kaz");
+
+	/*/
+	spmask* m0=new spmask("blah %s = %s - %s");
+	m0->fill("kkk", "lllll", "mmmmmmm");
 	spmask* m1=new spmask("blah %s = %d %f");
-	m1->fill("kkk", 1, 3.5f);
-
+	m1->fill("kkk", 1, 3.5);
+	spmask* m2=new spmask("blah %s = %d %p %f");
+	m2->fill("kkk", 1, retp, 3.5);
+*/
 	//sDbg* rootdbg=new sDbg(nullptr);
 
 	sRoot* root=nullptr;
