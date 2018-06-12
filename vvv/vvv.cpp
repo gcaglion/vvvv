@@ -94,7 +94,8 @@ struct sRoot : s1 {
 int main(int argc, char* argv[]) {
 	int ret;
 
-
+	spmask* m1=new spmask("blah %s = %d %f");
+	m1->fill("kkk", 1, 3.5f);
 
 	//sDbg* rootdbg=new sDbg(nullptr);
 

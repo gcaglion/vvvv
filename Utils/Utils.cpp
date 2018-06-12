@@ -101,7 +101,7 @@ EXPORT int  instr(char soughtChar, char* intoStr, Bool fromRight) {
 	}
 	return -1;
 }
-int argcnt(const char* mask) {
+EXPORT int argcnt(const char* mask) {
 	int cnt=0;
 	for (int i=0; i<strlen(mask); i++) {
 		if (mask[i]==37) cnt++;
