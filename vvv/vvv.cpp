@@ -22,11 +22,7 @@ struct sParmMgr :s1 {
 
 	sParmMgr(s0Name* name_, s0* parent_, sDbg* dbg_, s1parms* cParms_) : s1(name_, parent_, dbg_, cParms_) {
 
-		//cmdprep("open parameters file %s/%s for read", parmsFilePath_, parmsFileName_);
-		//cmdrun(parmsFile=new tFileInfo(this, parmsFileName_, parmsFilePath_, FILE_MODE_READ));
-
-
-//-- Original
+		//-- Original
 
 /*		try {
 			dbg->out(OBJ_MSG_INFO, __func__, "TRYING : open parameters file %s/%s", parmsFilePath_, parmsFileName_);
@@ -56,7 +52,7 @@ struct sRoot : s1 {
 		char* xmlfname="rootparms.xml";
 		char* xmlfpath="C:/temp";
 		
-		s1parms* sp1= new s1parms(true, "%s, %s");
+		s1parms* sp1= new s1parms("%s, %s", false);
 
 		//safespwn<sParmMgr>(XMLparms, new s0Name("rootXMLparms_%d", 88), nullptr, new s1Parms("sParmMgr", "%s, %s", xmlfname, xmlfpath), __func__);
 	}
@@ -72,9 +68,9 @@ int main(int argc, char* argv[]) {
 	int ret=3;
 	int* retp=&ret;
 
-	s1parms* sp1= new s1parms(false, "%s, %s");
-	sp1->fill("blah", "kaz");
-	s1parms* sp1f= new s1parms(true, "%s, %s", "blah", "kaz");
+	//s1parms* sp1= new s1parms("%s, %s", false);
+	//sp1->fill("blah", "kaz");
+	s1parms* sp1f= new s1parms("%s, %s", true, "blah", "kaz");
 
 	/*/
 	spmask* m0=new spmask("blah %s = %s - %s");
