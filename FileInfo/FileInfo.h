@@ -11,21 +11,21 @@
 
 typedef struct sFileInfo : s0 {
 
+	//-- constructor parameters (in order)
+	int mode;
 	char Path[MAX_PATH];
 	char Name[MAX_PATH];
-	char FullName[MAX_PATH];
+
+	//-- internal variables
 	FILE* handle;
 	fpos_t pos;
-
-	int mode;
+	char FullName[MAX_PATH];
 	char modeS[2];
 	char modeDesc[30];
 
 #ifdef __cplusplus
 
-	EXPORT void sFileInfo_common();
-	EXPORT sFileInfo(s0* parent_, char* Name_, char* Path_, int mode_);
-	EXPORT sFileInfo(s0* parent_, char* FullName_, int mode_);
+	EXPORT sFileInfo(s0name* name_, s0parms* cParms_, s0* parent_);
 	EXPORT ~sFileInfo();
 	EXPORT void savePos();
 	EXPORT void restorePos();

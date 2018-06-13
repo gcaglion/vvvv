@@ -1,27 +1,19 @@
 #include "FileInfo.h"
 
-//=== sFileInfo
-void sFileInfo::sFileInfo_common(){
-	setModeS(); 
+sFileInfo::sFileInfo(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, parent_, true) {
+
+	//-- set File, Path, mode from parameters
+	mode=cparms->pvalI[0];
+	strcpy_s(Path, MAX_PATH, cparms->pvalS[1]);
+	strcpy_s(Name, MAX_PATH, cparms->pvalS[2]);
+
+	setModeS();
 	fopen_s(&handle, FullName, modeS);
 	if (errno!=0) {
 		sprintf_s(errmsg, sizeof(errmsg), "%s(): Error %d trying to %s file %s", __func__, errno, modeDesc, FullName);
 		throw std::exception(errmsg);
 	}
 	savePos();
-}
-
-sFileInfo::sFileInfo(s0* parent_, char* Name_, char* Path_, int mode_) :s0(new s0Name("%s_File", ((parent_==nullptr) ? "default":parent_->name->s)), parent_, true) {
-	
-	strcpy_s(Name, MAX_PATH, Name_);
-	strcpy_s(Path, MAX_PATH, Path_);
-	mode=mode_;
-	sFileInfo_common();
-}
-sFileInfo::sFileInfo(s0* parent_, char* FullName_, int mode_) :s0(new s0Name("%s_File", ((parent_==nullptr) ? "default" : parent_->name->s)), parent_, true) {
-	splitFullFileName(FullName_, Path, Name);
-	mode=mode_;
-	sFileInfo_common();
 }
 
 sFileInfo::~sFileInfo() {

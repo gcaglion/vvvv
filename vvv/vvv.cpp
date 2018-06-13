@@ -4,37 +4,18 @@
 #include "../s1/s1.h"
 #include "../FileInfo/FileInfo.h"
 
-/*void sc(char* icmdMask_, char* ocmd, ...) {
-	char cmd[CMD_MAXLEN];
-	va_list args;
-	va_start(args, icmdMask_);
-	vsprintf_s(ocmd, CMD_MAXLEN, icmdMask_, args);
-	va_end(args);
-
-}
-*/
 
 struct sParmMgr :s1 {
 
-	int p1;
-	int p2;
+	//-- constructor parameters (in order)
+	char* parmsFilePath;
+	char* parmsFileName;
+	//-- internal variables
 	tFileInfo* parmsFile=nullptr;
 
-	sParmMgr(s0Name* name_, s0* parent_, sDbg* dbg_, s1parms* cParms_) : s1(name_, parent_, dbg_, cParms_) {
+	sParmMgr(s0name* name_, s0parms* cparms_, s0* parent_, sDbg* dbg_) : s1(name_, cparms_, parent_, dbg_) {
 
-		//-- Original
-
-/*		try {
-			dbg->out(OBJ_MSG_INFO, __func__, "TRYING : open parameters file %s/%s", parmsFilePath_, parmsFileName_);
-			parmsFile=new tFileInfo(this, parmsFileName_, parmsFilePath_, FILE_MODE_READ);
-			dbg->out(OBJ_MSG_INFO, __func__, "SUCCESS: open parameters file %s/%s", parmsFilePath_, parmsFileName_);
-		}
-		catch (std::exception exc) {
-			dbg->out(OBJ_MSG_ERR, __func__, "FAILURE: open parameters file %s/%s . Exception: %s", parmsFilePath_, parmsFileName_, exc.what());
-			throw std::exception(dbg->msg);
-		}
-	//--
-*/
+		safespawn0(parmsFile, tFileInfo, newname("%s_pfile", name), newparms("%d, %s, %s", FILE_MODE_READ, cparms->pvalS[0], cparms->pvalS[1]), false );
 	}
 
 	void met(int p) {
@@ -44,43 +25,28 @@ struct sParmMgr :s1 {
 
 struct sRoot : s1 {
 
-	sParmMgr* XMLparms=nullptr;
+	sParmMgr* xmlparms=nullptr;
 
-	sRoot(sDbg* rootDbg_=nullptr) : s1(new s0Name("root%d",99), nullptr, rootDbg_, nullptr) {
+	sRoot(sDbg* rootDbg_=nullptr) : s1(new s0name("root%d",99), nullptr, nullptr, rootDbg_) {
 
 		//-- spawn XMLparms
 		char* xmlfname="rootparms.xml";
 		char* xmlfpath="C:/temp";
 		
-		s1parms* sp1= new s1parms("%s, %s", false);
+		safespawn1(xmlparms, sParmMgr, newname("rootXMLparms_%d", 88), newparms("%s, %s", xmlfpath, xmlfname), nullptr);
 
-		//safespwn<sParmMgr>(XMLparms, new s0Name("rootXMLparms_%d", 88), nullptr, new s1Parms("sParmMgr", "%s, %s", xmlfname, xmlfpath), __func__);
+		xmlparms->met(1);
+
 	}
 
 	~sRoot() {
-		delete XMLparms;
 	}
 
 };
 
 
 int main(int argc, char* argv[]) {
-	int ret=3;
-	int* retp=&ret;
-
-	//s1parms* sp1= new s1parms("%s, %s", false);
-	//sp1->fill("blah", "kaz");
-	s1parms* sp1f= new s1parms("%s, %s", true, "blah", "kaz");
-
-	/*/
-	spmask* m0=new spmask("blah %s = %s - %s");
-	m0->fill("kkk", "lllll", "mmmmmmm");
-	spmask* m1=new spmask("blah %s = %d %f");
-	m1->fill("kkk", 1, 3.5);
-	spmask* m2=new spmask("blah %s = %d %p %f");
-	m2->fill("kkk", 1, retp, 3.5);
-*/
-	//sDbg* rootdbg=new sDbg(nullptr);
+	int ret;
 
 	sRoot* root=nullptr;
 	try {
