@@ -23,6 +23,14 @@ struct sParmMgr :s1 {
 	}
 };
 
+struct sKaz :s1 {
+	int p1;
+
+	sKaz(s0name* name_, s0parms* cparms_, s0* parent_, sDbg* dbg_) : s1(name_, cparms_, parent_, dbg_) {
+		p1=9;
+	}
+};
+
 struct sRoot : s1 {
 
 	sParmMgr* xmlparms=nullptr;
@@ -47,6 +55,7 @@ struct sRoot : s1 {
 
 int main(int argc, char* argv[]) {
 	int ret;
+
 
 	sRoot* root=nullptr;
 	try {

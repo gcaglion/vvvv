@@ -1,6 +1,6 @@
 #include "FileInfo.h"
 
-sFileInfo::sFileInfo(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, parent_, true) {
+sFileInfo::sFileInfo(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, parent_) {
 
 	//-- set File, Path, mode from parameters
 	mode=cparms->pvalI[0];

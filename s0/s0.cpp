@@ -49,7 +49,7 @@ s0parms::s0parms(const char* mask_, ...) {
 
 }
 
-s0::s0(s0name* name_, s0parms* cparms_, s0* parent_, bool noDelete_) {
+s0::s0(s0name* name_, s0parms* cparms_, s0* parent_) {
 
 	//-- 1. sets class-specific constructor parameters.
 	cparms=cparms_;
@@ -58,10 +58,10 @@ s0::s0(s0name* name_, s0parms* cparms_, s0* parent_, bool noDelete_) {
 		stackLevel=0;
 	} else {
 		stackLevel=parent->stackLevel+1;
-		if (!noDelete_) {
+		//*if (!noDelete_) {
 			parent->child[parent->childrenCnt]=this;
 			parent->childrenCnt++;
-		}
+		//}
 	}
 
 }
@@ -72,4 +72,3 @@ s0::~s0() {
 	}
 
 }
-

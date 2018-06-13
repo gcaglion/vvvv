@@ -1,6 +1,6 @@
 #include "dbg.h"
 
-sDbg::sDbg(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, parent_, true) {
+sDbg::sDbg(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, parent_) {
 
 	//-- set default values for each parameter not set in cParms
 	if (cparms->pcnt<5) strcpy_s(outFilePath, MAX_PATH, DEFAULT_DBG_FPATH);
@@ -16,12 +16,11 @@ sDbg::sDbg(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, pa
 	char outFileName[MAX_PATH];
 	sprintf_s(outFileName, MAX_PATH, "%s(%p).%s", name->s, parent, (verbose) ? "log" : "err");
 	if (dest!=DBG_DEST_SCREEN) {
-		safespawn0(outFile, tFileInfo, new s0name("%s_File", name->s), new s0parms("%d, %s, %s", FILE_MODE_WRITE, outFilePath, outFileName), false);
+		safespawn0(outFile, tFileInfo, new s0name("%s_File", name->s), new s0parms("%d, %s, %s", FILE_MODE_WRITE, outFilePath, outFileName));
 	}
 }
 
 sDbg::~sDbg() {
-	delete outFile;
 }
 
 void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask, ...) {

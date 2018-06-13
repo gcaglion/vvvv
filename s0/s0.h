@@ -49,10 +49,10 @@ struct s0 {
 	s0* child[OBJ_MAX_CHILDREN];
 	char errmsg[OBJ_MSG_MAXLEN];
 
-	EXPORT s0(s0name* name_, s0parms* cparms_, s0* parent_, bool noDelete_);
-	EXPORT ~s0();
+	EXPORT s0(s0name* name_, s0parms* cparms_, s0* parent_);
+	EXPORT virtual ~s0();
 
-	template <typename objType> EXPORT objType* safespwn0(const char* parentFunc_, char* className_, s0name* objNameVar_, s0parms* objParms_, bool noDelete_=false) {
+	template <typename objType> EXPORT objType* safespwn0(const char* parentFunc_, char* className_, s0name* objNameVar_, s0parms* objParms_) {
 		objType* retObj=nullptr;
 		try {
 			retObj = new objType(objNameVar_, objParms_, this);
@@ -67,4 +67,4 @@ struct s0 {
 
 #define newname(mask_, ...) new s0name(mask_, __VA_ARGS__)
 #define newparms(mask_, ...) new s0parms(mask_, __VA_ARGS__)
-#define safespawn0(objname_, classname_, s0name_, s0parms_, nodelete_) (objname_)= safespwn0<classname_>(__func__, #classname_, (s0name_), (s0parms_), (nodelete_) );
+#define safespawn0(objname_, classname_, s0name_, s0parms_) (objname_)= safespwn0<classname_>(__func__, #classname_, (s0name_), (s0parms_) );
