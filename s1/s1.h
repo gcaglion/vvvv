@@ -3,6 +3,8 @@
 #include "../s0/s0.h"
 #include "../dbg/dbg.h"
 
+#define S1
+
 struct s1 :s0 {
 	sDbg* dbg;
 
@@ -26,4 +28,4 @@ struct s1 :s0 {
 
 };
 
-#define safespawn1(objname_, classname_, s0name_, s0parms_, dbg_) (objname_)= safespwn1<classname_>(__func__, #classname_, (s0name_), (s0parms_), (dbg_) );
+#define safespawn1(objname_, classname_, s0name_, s0parms_, dbg_) (objname_) = safespwn1<classname_>(__func__, #classname_, (s0name_), (s0parms_), (dbg_) );

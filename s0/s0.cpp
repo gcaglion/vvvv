@@ -66,7 +66,7 @@ s0::s0(s0name* name_, s0parms* cparms_, s0* parent_) {
 
 }
 
-s0::~s0() {
+ s0::~s0() {
 	for (int c=childrenCnt-1; c>=0; c--) {
 		delete child[c];
 	}
