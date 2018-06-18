@@ -26,6 +26,9 @@ typedef struct sFileInfo : s0 {
 	//-- constructor parameters sets
 
 	void commonConstructor();
+	EXPORT sFileInfo(s0parmsdef, char* fname_) : s0(s0parmsval) {
+		int kaz=0;
+	}
 	EXPORT sFileInfo(s0parmsdef, char* fname_, int mode_, char* fpath_);
 	EXPORT sFileInfo(s0parmsdef, char* ffname_, int mode_);
 	EXPORT ~sFileInfo();

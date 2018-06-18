@@ -156,6 +156,7 @@
     <ClCompile Include="s0.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dbg.h" />
     <ClInclude Include="s0.h" />
     <ClInclude Include="svard.h" />
   </ItemGroup>
