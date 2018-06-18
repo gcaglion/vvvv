@@ -15,12 +15,12 @@ void sFileInfo::commonConstructor() {
 		strcpy_s(modeDesc, "Append");
 		break;
 	default:
-		out(OBJ_MSG_FAIL, __func__, "Invalid mode: (%d)", mode);
+		dbg->out(DBG_MSG_FAIL, __func__, "Invalid mode: (%d)", mode);
 		break;
 	}
 
 	fopen_s(&handle, ffname, modeS);
-	if (errno!=0) out(OBJ_MSG_FAIL, __func__, "Error %d", errno);
+	if (errno!=0) dbg->out(DBG_MSG_FAIL, __func__, "Error %d", errno);
 	savePos();
 
 }
