@@ -70,4 +70,4 @@ struct s0 {
 
 
 #define s0spawn(objName_, objType, objCparms_) {}
-#define s0safespawn(objName_, objType, objCparms_) {}
+
