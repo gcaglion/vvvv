@@ -27,7 +27,7 @@ s0::s0(s0parmsdef) {
 	 char tmpmsg[OBJ_MSG_MAXLEN];
 
 	 char indent[16]=""; for (int t=0; t<stackLevel; t++) strcat_s(indent, 16, "\t");
-	 sprintf_s(msg, OBJ_MSG_MAXLEN, "%s%s->%s() %s %s \n", indent, parent->name, callerFunc_, (msgtype==OBJ_MSG_INFO) ? "INFO:  " : "ERROR: ", tmpmsg);
+	 sprintf_s(msg, OBJ_MSG_MAXLEN, "%s%s->%s() %s %s \n", indent, parent->name->fullstring, callerFunc_, (msgtype==OBJ_MSG_INFO) ? "INFO:  " : "ERROR: ", tmpmsg);
 	 strcat_s(stack, OBJ_STACK_MAXLEN, msg); strcat_s(stack, OBJ_STACK_MAXLEN, "\n");
 
 	 printf("%s", msg);

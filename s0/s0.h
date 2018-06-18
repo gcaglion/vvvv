@@ -18,13 +18,25 @@
 #define OBJ_PARMS_MASK_MAXLEN	125
 #define OBJ_PARMS_VAL_MAXLEN	1024
 
-#define s0parmsdef svard* name_, s0* parent_, bool verbose_
+#define s0parmsdef sname* name_, s0* parent_, bool verbose_
 #define s0parmsval name_, parent_, verbose_
+
+struct sname {
+	char fullstring[OBJ_NAME_MAXLEN];
+
+	sname(char* nameMask_, ...) {
+		va_list nargs;
+		va_start(nargs, nameMask_);
+		vsprintf_s(fullstring, OBJ_NAME_MAXLEN, nameMask_, nargs);
+		va_end(nargs);
+	}
+
+};
+#define newname(mask_, ...) new sname(mask_, __VA_ARGS__)
 
 struct s0 {
 
-	//char name[OBJ_NAME_MAXLEN];
-	svard* name;
+	sname* name;
 	s0* parent;
 	char parentFunc[2048];
 	int stackLevel;
@@ -41,16 +53,15 @@ struct s0 {
 	EXPORT void out(int msgtype, const char* callerFunc_, svard* msgvard);
 	EXPORT void out(int msgtype, const char* callerFunc_, char* msgMask_, ...);
 
-
-	template <typename objType> EXPORT objType* _spawn(const char* parentFunc_, char* className_, char* objName_, svard* objCparms_) {
+	template <typename objType> EXPORT objType* _spawn(const char* parentFunc_, char* className_, sname* objName_, svard* objCparms_) {
 		objType* retObj=nullptr;
 		try {
-			out(OBJ_MSG_INFO, parentFunc_, "TRYING  : %s = new %s(%s)", objName_, className_, objCparms_->fullstring);
+			out(OBJ_MSG_INFO, parentFunc_, "TRYING  : %s = new %s(%s)", objName_->fullstring, className_, objCparms_->fullstring);
 			//retObj = new objType(objName_, this, objCParms_, objDbgVar_);
-			out(OBJ_MSG_INFO, parentFunc_, "SUCCESS : %s = new %s(%s)", objName_, className_, objCparms_->fullstring);
+			out(OBJ_MSG_INFO, parentFunc_, "SUCCESS : %s = new %s(%s)", objName_->fullstring, className_, objCparms_->fullstring);
 		}
 		catch (std::exception exc) {
-			out(OBJ_MSG_ERR, parentFunc_, "FAILURE : %s = new %s(%s) . Exception: %s", objName_, className_, objCparms_->fullstring, exc.what());
+			out(OBJ_MSG_ERR, parentFunc_, "FAILURE : %s = new %s(%s) . Exception: %s", objName_->fullstring, className_, objCparms_->fullstring, exc.what());
 			throw std::exception(msg);
 		}
 	}

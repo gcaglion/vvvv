@@ -62,7 +62,8 @@ struct sRoots0 : s0 {
 
 		//sname* f1name=new sname("f%dname");
 		//f1name->variadic(1);
-		svard* f1parms=new svard("dioporco.f1.log", FILE_MODE_WRITE, "C:/temp");
+		svard* f1parms=newsvard("dioporco.f1.log", FILE_MODE_WRITE, "C:/temp");
+		printf("calling new file with (%s)", f1parms->fullval);
 		//f1parms->variadic("dioporco.f1.log", FILE_MODE_WRITE, "C:/temp");
 
 		//f1=_spawn<tFileInfo>(__func__, "tFileInfo", f1name, f1parms);
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
 
 	sRoots0* root=nullptr;
 	try {
-		root=new sRoots0()
+		root=new sRoots0(newname("root_%d", 99), nullptr, true);
 		printf("main() successful.\n");
 		ret=0;
 	}
