@@ -1,6 +1,6 @@
 #include "dbg.h"
 
-sDbg::sDbg(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, parent_) {
+sDbg::sDbg(s0parmsdef) : s0(s0parmsval) {
 
 	//-- set default values for each parameter not set in cParms
 	if (cparms->pcnt<5) strcpy_s(outFilePath, MAX_PATH, DEFAULT_DBG_FPATH);

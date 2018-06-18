@@ -31,7 +31,7 @@ struct sDbg : s0 {
 	char msg[DBG_MSG_MAXLEN];
 	char stack[DBG_STACK_MAXLEN];
 
-	EXPORT sDbg(s0name* name_, s0parms* cparms_, s0* parent_);
+	EXPORT sDbg(s0parmsdef);
 	EXPORT ~sDbg();
 
 	EXPORT void out(int type, const char* callerFunc_, char* msgMask, ...);

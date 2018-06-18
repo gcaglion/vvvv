@@ -1,19 +1,43 @@
 #include "FileInfo.h"
 
-sFileInfo::sFileInfo(s0name* name_, s0parms* cparms_, s0* parent_) : s0(name_, cparms_, parent_) {
-
-	//-- set File, Path, mode from parameters
-	mode=cparms->pvalI[0];
-	strcpy_s(Path, MAX_PATH, cparms->pvalS[1]);
-	strcpy_s(Name, MAX_PATH, cparms->pvalS[2]);
-
-	setModeS();
-	fopen_s(&handle, FullName, modeS);
-	if (errno!=0) {
-		sprintf_s(errmsg, sizeof(errmsg), "%s(): Error %d trying to %s file %s", __func__, errno, modeDesc, FullName);
-		throw std::exception(errmsg);
+void sFileInfo::commonConstructor() {
+	switch (mode) {
+	case FILE_MODE_READ:
+		strcpy_s(modeS, "r");
+		strcpy_s(modeDesc, "Read");
+		break;
+	case FILE_MODE_WRITE:
+		strcpy_s(modeS, "w");
+		strcpy_s(modeDesc, "Write");
+		break;
+	case FILE_MODE_APPEND:
+		strcpy_s(modeS, "a");
+		strcpy_s(modeDesc, "Append");
+		break;
+	default:
+		out(OBJ_MSG_FAIL, __func__, "Invalid mode: (%d)", mode);
+		break;
 	}
+
+	fopen_s(&handle, ffname, modeS);
+	if (errno!=0) out(OBJ_MSG_FAIL, __func__, "Error %d", errno);
 	savePos();
+
+}
+sFileInfo::sFileInfo(s0parmsdef, char* fname_, int mode_, char* fpath_) : s0(s0parmsval) {
+	mode=mode_;
+	strcpy_s(fpath, MAX_PATH, fpath_);
+	strcpy_s(fname, MAX_PATH, fname_);
+	sprintf_s(ffname, MAX_PATH, "%s/%s", fpath, fname);
+
+	commonConstructor();
+}
+sFileInfo::sFileInfo(s0parmsdef, char* ffname_, int mode_) : s0(s0parmsval) {
+	mode=mode_;
+	strcpy_s(ffname, MAX_PATH, ffname_);
+	splitFullFileName(ffname, fpath, fname);
+
+	commonConstructor();
 }
 
 sFileInfo::~sFileInfo() {
@@ -22,41 +46,12 @@ sFileInfo::~sFileInfo() {
 	size_t fsize = ftell(handle); // get current file pointer
 
 	fclose(handle);
-	if (fsize==0) remove(FullName);
+	if (fsize==0) remove(ffname);
 }
 void sFileInfo::savePos() {
 	fgetpos(handle, &pos);
 }
 void sFileInfo::restorePos(){
 	fsetpos(handle, &pos);
-}
-void sFileInfo::setModeS() {
-	DWORD ct=timeGetTime();
-
-	if (strlen(Path)==0) {
-		if (!getCurrentPath(Path)) {
-			sprintf_s(errmsg, sizeof(errmsg), "%s(): getCurrentPath() failed.\n", __func__); throw std::runtime_error(errmsg);
-		}
-	}
-	switch (mode) {
-	case FILE_MODE_READ:
-		strcpy_s(modeS, "r");
-		strcpy_s(modeDesc, "Read"); 
-		sprintf_s(FullName, MAX_PATH-1, "%s/%s", Path, Name);
-		break;
-	case FILE_MODE_WRITE:
-		strcpy_s(modeS, "w");
-		strcpy_s(modeDesc, "Write"); 
-		//sprintf_s(FullName, MAX_PATH-1, "%s/%lu_%s", Path, ct, Name);
-		sprintf_s(FullName, MAX_PATH-1, "%s/%s", Path, Name);
-		break;
-	case FILE_MODE_APPEND:
-		strcpy_s(modeS, "a");
-		strcpy_s(modeDesc, "Append"); 
-		break;
-	default:
-		sprintf_s(errmsg, sizeof(errmsg), "%s(): Error %d accessing file %s; invalid mode: (%d)\n", __func__, errno, FullName, mode); throw std::runtime_error(errmsg);
-		break;
-	}
 }
 

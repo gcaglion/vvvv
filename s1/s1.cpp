@@ -1,7 +1,7 @@
 #include "s1.h"
 
 
-s1::s1(s0name* name_, s0parms* cparms_, s0* parent_, sDbg* dbg_) : s0(name_, cparms_, parent_) {
+s1::s1(s0parmsdef, sDbg* dbg_) : s0(s0parmsval) {
 
 	//-- sets dbg
 	if (dbg_==nullptr) {

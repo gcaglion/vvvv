@@ -1,10 +1,9 @@
 #include "../CommonEnv.h"
 
 #include "../s0/s0.h"
-#include "../s1/s1.h"
 #include "../FileInfo/FileInfo.h"
 
-
+/*
 struct sParmMgr :s1 {
 
 	//-- constructor parameters (in order)
@@ -13,7 +12,7 @@ struct sParmMgr :s1 {
 	//-- internal variables
 	tFileInfo* parmsFile=nullptr;
 
-	sParmMgr(s0name* name_, s0parms* cparms_, s0* parent_, sDbg* dbg_) : s1(name_, cparms_, parent_, dbg_) {
+	sParmMgr(s0parmsdef, sDbg* dbg_) : s1(s0parmsval, dbg_) {
 
 		safespawn0(parmsFile, tFileInfo, newname("%s_pfile", name), newparms("%d, %s, %s", FILE_MODE_READ, cparms->pvalS[0], cparms->pvalS[1]));
 	}
@@ -26,7 +25,7 @@ struct sParmMgr :s1 {
 struct sKaz :s1 {
 	int p1;
 
-	sKaz(s0name* name_, s0parms* cparms_, s0* parent_, sDbg* dbg_) : s1(name_, cparms_, parent_, dbg_) {
+	sKaz(s0parmsdef, sDbg* dbg_) : s1(s0parmsval, dbg_) {
 		p1=9;
 	}
 };
@@ -42,7 +41,7 @@ struct sRoot : s1 {
 		char* xmlfpath="C:/temp";
 		
 		//xmlparms=safespwn1(__func__, "SParmMgr", newname("rootXMLparms_%d", 88), newparms("%s, %s", xmlfpath, xmlfname), nullptr);
-		safespawn1(xmlparms, sParmMgr, newname("rootXMLparms_%d", 88), newparms("%s, %s", xmlfpath, xmlfname), nullptr);
+		//safespawn1(xmlparms, sParmMgr, newname("rootXMLparms_%d", 88), newparms("%s, %s", xmlfpath, xmlfname), nullptr);
 
 		xmlparms->met(1);
 
@@ -52,24 +51,37 @@ struct sRoot : s1 {
 	}
 
 };
+*/
+
+struct sRoots0 : s0 {
+
+	//-- root-level objects
+	tFileInfo* f1=nullptr;
+
+	sRoots0(s0parmsdef) : s0(s0parmsval) {
+
+		//sname* f1name=new sname("f%dname");
+		//f1name->variadic(1);
+		svard* f1parms=new svard("dioporco.f1.log", FILE_MODE_WRITE, "C:/temp");
+		//f1parms->variadic("dioporco.f1.log", FILE_MODE_WRITE, "C:/temp");
+
+		//f1=_spawn<tFileInfo>(__func__, "tFileInfo", f1name, f1parms);
 
 
-template <typename... Types> struct foo {};
+	}
 
-template < typename... Types1, template <typename...> class T , typename... Types2, template <typename...> class V , typename U > void bar(const T<Types1...>&, const V<Types2...>&, const U& u) {
-	std::cout<<sizeof...(Types1)<<std::endl;
-	std::cout<<sizeof...(Types2)<<std::endl;
-	std::cout<<u<<std::endl;
-}
+};
+
+
 
 
 int main(int argc, char* argv[]) {
 	int ret;
 
 
-	sRoot* root=nullptr;
+	sRoots0* root=nullptr;
 	try {
-		root=new sRoot();
+		root=new sRoots0()
 		printf("main() successful.\n");
 		ret=0;
 	}

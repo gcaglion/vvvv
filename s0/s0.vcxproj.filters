@@ -23,5 +23,8 @@
     <ClInclude Include="s0.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="svard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,12 +3,10 @@
 #include "../s0/s0.h"
 #include "../dbg/dbg.h"
 
-#define S1
-
 struct s1 :s0 {
 	sDbg* dbg;
 
-	EXPORT s1(s0name* name_, s0parms* cparms_, s0* parent_, sDbg* dbg_);
+	EXPORT s1(s0parmsdef, sDbg* dbg_);
 	EXPORT ~s1();
 
 	template <typename objType> EXPORT objType* safespwn1(const char* parentFunc_, char* className_, s0name* objNameVar_, s0parms* objParms_, sDbg* objDbgVar_) {
@@ -28,4 +26,4 @@ struct s1 :s0 {
 
 };
 
-#define safespawn1(objname_, classname_, s0name_, s0parms_, dbg_) (objname_) = safespwn1<classname_>(__func__, #classname_, (s0name_), (s0parms_), (dbg_) );
+//#define safespawn1(objname_, classname_, s0name_, s0parms_, dbg_) (objname_) = safespwn1<classname_>(__func__, #classname_, (s0name_), (s0parms_), (dbg_) );
