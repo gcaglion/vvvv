@@ -1,9 +1,12 @@
 #pragma once
 #include "../CommonEnv.h"
+#include "dbg.h"
 
 #define PARMS_MAXCNT	32
 #define PARM_MASK_LEN	8
 #define PARM_VAL_MAXLEN	1024
+
+#define CMD_MAXLEN 4096
 
 struct svard {
 	int  pcnt;
@@ -20,7 +23,7 @@ struct svard {
 	void select(numtype a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "%f, "); }
 	void select(long* a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "%p, "); }
 
-	template <class T> void addParm(T a){
+	template <class T> void addParm(T a) {
 		sprintf_s(pvalS[pcnt], PARM_VAL_MAXLEN, pmask[pcnt], a);
 		strcat_s(fullval, PARMS_MAXCNT*PARM_VAL_MAXLEN, pvalS[pcnt]);
 		pcnt++;
@@ -35,21 +38,17 @@ struct svard {
 		select(a);
 		addParm(a);
 		variadic(args...);
+		if (pcnt>0) fullval[strlen(fullval)-2]='\0';
 	}
 	template <class T, class ...Args> svard* getsvard(T a, Args... args) {
 		variadic(a, args...);
-		if (pcnt>0) fullval[strlen(fullval)-2]='\0';
 		return this;
 	}
 
 	svard() {
 		pcnt=0;
-		fullval[0]='\0'; //fullmask[0]='\0';
+		fullval[0]='\0';
 	}
 	
 };
-
-#define newsvard(...) { \
-(new svard())->getsvard(__VA_ARGS__) \
-}
 

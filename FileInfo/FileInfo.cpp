@@ -15,25 +15,25 @@ void sFileInfo::commonConstructor() {
 		strcpy_s(modeDesc, "Append");
 		break;
 	default:
-		dbg->out(DBG_MSG_FAIL, __func__, "Invalid mode: (%d)", mode);
+		s0p->dbg->out(DBG_MSG_FAIL, __func__, "Invalid mode: (%d)", mode);
 		break;
 	}
 
 	fopen_s(&handle, ffname, modeS);
-	if (errno!=0) dbg->out(DBG_MSG_FAIL, __func__, "Error %d", errno);
+	if (errno!=0) s0p->dbg->out(DBG_MSG_FAIL, __func__, "Error %d", errno);
 	savePos();
 
 }
-sFileInfo::sFileInfo(s0parmsdef, char* fname_, int mode_, char* fpath_) : s0(s0parmsval) {
-	mode=mode_;
+sFileInfo::sFileInfo(s0* s0p_, char* fname_, int mode_, char* fpath_) {
+	s0p=s0p_; mode=mode_;
 	strcpy_s(fpath, MAX_PATH, fpath_);
 	strcpy_s(fname, MAX_PATH, fname_);
 	sprintf_s(ffname, MAX_PATH, "%s/%s", fpath, fname);
 
 	commonConstructor();
 }
-sFileInfo::sFileInfo(s0parmsdef, char* ffname_, int mode_) : s0(s0parmsval) {
-	mode=mode_;
+sFileInfo::sFileInfo(s0* s0p_, char* ffname_, int mode_) {
+	s0p=s0p_; mode=mode_;
 	strcpy_s(ffname, MAX_PATH, ffname_);
 	splitFullFileName(ffname, fpath, fname);
 

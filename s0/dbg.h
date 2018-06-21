@@ -60,5 +60,4 @@ struct sDbgParms {
 
 	}
 };
-
 #define newdbg(...) new sDbgParms(__VA_ARGS__)

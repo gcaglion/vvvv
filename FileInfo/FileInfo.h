@@ -9,7 +9,8 @@
 #include "FileInfo_enums.h"
 
 
-typedef struct sFileInfo : s0 {
+typedef struct sFileInfo {
+	s0* s0p;
 
 	//-- constructor parameters (in order)
 	char fpath[MAX_PATH];
@@ -26,11 +27,8 @@ typedef struct sFileInfo : s0 {
 	//-- constructor parameters sets
 
 	void commonConstructor();
-	EXPORT sFileInfo(s0parmsdef, char* fname_) : s0(s0parmsval) {
-		int kaz=0;
-	}
-	EXPORT sFileInfo(s0parmsdef, char* fname_, int mode_, char* fpath_);
-	EXPORT sFileInfo(s0parmsdef, char* ffname_, int mode_);
+	EXPORT sFileInfo(s0* s0p_, char* fname_, int mode_, char* fpath_);
+	EXPORT sFileInfo(s0* s0p_, char* ffname_, int mode_);
 	EXPORT ~sFileInfo();
 	EXPORT void savePos();
 	EXPORT void restorePos();

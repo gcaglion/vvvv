@@ -1,6 +1,7 @@
 #include "../CommonEnv.h"
 
 #include "../s0/s0.h"
+#include "../s0/svard.h"
 #include "../FileInfo/FileInfo.h"
 
 /*
@@ -53,24 +54,35 @@ struct sRoot : s1 {
 };
 */
 
-struct sRoots0 : s0 {
+struct sK {
+	s0* s0p;
 
-	sFileInfo* f1=nullptr;;
+	int p1; char* p2;
 
-	sRoots0(s0parmsdef) : s0(s0parmsval) {
-
-		sname* f1name=newname("f%dname", 10);
-		sDbgParms* f1dbg=newdbg();
-		svard* f1parms=newsvard("diprc.f1.log", FILE_MODE_WRITE, "C:/temp");
-
-		//sp0m(tFileInfo, f1, f1name, f1dbg, f1parms);
-
-		f1=_spawn<tFileInfo>(__func__, f1name, f1dbg, f1parms);
-
+	sK(s0* s0p_, int p1_, char* p2_) {
+		s0p=s0p_; p1=p1_; p2=p2_;
 	}
 
 };
 
+
+
+struct sRoot {
+	s0* s0p;
+
+	sK* sK1;
+
+	sRoot(s0* s0p_) {
+		s0p=s0p_; 
+		s0p->setParms(nullptr, newdbg());
+
+		int vp1=3; char* vp2="vp2";
+		
+		sK1 = s0p->___spawn<sK>(__func__,  newname("sk%dname", 1), newdbg(), vp1, vp2);
+		
+	}
+
+};
 
 
 
@@ -78,9 +90,12 @@ int main(int argc, char* argv[]) {
 	int ret;
 
 
-	sRoots0* root=nullptr;
+
+		
+	sRoot* root=nullptr;
 	try {
-		root=new sRoots0(newname("root_%d", 99), nullptr, new sDbgParms());
+		root=new sRoot(new s0(nullptr, newdbg(), "root"));
+
 		printf("main() successful.\n");
 		ret=0;
 	}

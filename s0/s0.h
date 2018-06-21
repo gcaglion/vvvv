@@ -1,9 +1,7 @@
 #pragma once
 #include "../CommonEnv.h"
-#include "svard.h"
 #include "dbg.h"
 
-#define CMD_MAXLEN 4096
 #define OBJ_NAME_MAXLEN 128
 #define OBJ_MAX_CHILDREN 64
 //--
@@ -11,26 +9,12 @@
 #define OBJ_PARMS_MASK_MAXLEN	125
 #define OBJ_PARMS_VAL_MAXLEN	1024
 
-#define s0parmsdef   sname* name_, s0* parent_, sDbgParms* dbg_
-#define s0parmsval name_, parent_, dbg_
-
-struct sname {
-	char fullstring[OBJ_NAME_MAXLEN];
-
-	sname(char* nameMask_, ...) {
-		va_list nargs;
-		va_start(nargs, nameMask_);
-		vsprintf_s(fullstring, OBJ_NAME_MAXLEN, nameMask_, nargs);
-		va_end(nargs);
-	}
-
-};
-#define newname(mask_, ...) new sname(mask_, __VA_ARGS__)
-
+#include "svard.h"
 #include <typeinfo>
+
 struct s0 {
 
-	sname* name;
+	char name[OBJ_NAME_MAXLEN];
 	s0* parent;
 	char parentFunc[2048];
 	int stackLevel;
@@ -39,59 +23,44 @@ struct s0 {
 	//-- debugging
 	sDbgParms* dbg;
 	FILE* dbgoutfile;
-
-	char cmd[CMD_MAXLEN]; 
 	
-	EXPORT s0(s0parmsdef);
+	EXPORT s0(s0* parent_, sDbgParms* dbg_, char* name_);
 	EXPORT virtual ~s0();
+	EXPORT s0(char* name_, ...);
+	EXPORT void setParms(s0* parent, sDbgParms* dbg_);
+	//EXPORT static char* getName(char* oName_, char* nameMask_, ...);
 
-	//void blah(s0* objVar_, const char* className_, sname* objName_, svard* objCparms_, bool verbose_, s0* parent_, const char* callerFunc_) {
-	void blah(s0* objVar_, const char* className_, sname* objName_, svard* objCparms_, bool verbose_, s0* parent_, const char* callerFunc_) {
+	 template <class objT, class ...classArgs> EXPORT objT* ___spawn(const char* callerFunc_, s0* childs0p_, sDbgParms* childDbg_, classArgs... objCargs) {
 
+		 childs0p_->setParms(this, childDbg_);
+
+		svard* childSvard=new svard();
+
+		childSvard->variadic(objCargs...);
+		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", childs0p_->name, typeid(objT).name(), childSvard->fullval);
+
+		objT* retObj;
 		try {
-			dbg->out(DBG_MSG_INFO, callerFunc_, "TRYING  : %s = new %s(%s)", objName_->fullstring, className_, objCparms_->fullval);
-			//retObj = new objType(objName_, this, objCParms_, objDbgVar_);
-			dbg->out(DBG_MSG_INFO, callerFunc_, "SUCCESS : %s = new %s(%s)", objName_->fullstring, className_, objCparms_->fullval);
+			childs0p_->dbg=childDbg_;
+			dbg->out(DBG_MSG_INFO, callerFunc_, "TRYING  : %s", cmd);
+			retObj = new objT(childs0p_, objCargs...);
+			dbg->out(DBG_MSG_INFO, callerFunc_, "SUCCESS : %s", cmd);
 		}
 		catch (std::exception exc) {
-			dbg->out(DBG_MSG_ERR, callerFunc_, "FAILURE : %s = new %s(%s) . Exception: %s", objName_->fullstring, className_, objCparms_->fullval, exc.what());
-			throw std::exception(dbg->msg);
-		}
-	}
-
-#define r(parms_) retObj=new objType(parms_);
-/*	template <typename objType> EXPORT void _spawn(const char* parentFunc_, objType* objVar_, sname* objName_, sDbgParms* dbgParms_, svard* objCparms_) {
-		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", objName_->fullstring, typeid(objType).name(), objCparms_->fullval);
-		try {
-			dbg->out(DBG_MSG_INFO, parentFunc_, "TRYING  : %s", cmd);
-			runcmd(cmd);
-			dbg->out(DBG_MSG_INFO, parentFunc_, "SUCCESS : %s", cmd);
-		}
-		catch (std::exception exc) {
-			dbg->out(DBG_MSG_ERR, parentFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
-			throw std::exception(dbg->msg);
-		}
-	}*/
-	template <typename objType> EXPORT objType* _spawn(const char* parentFunc_, sname* objName_, sDbgParms* dbgParms_, svard* objCparms_) {
-		objType* retObj=nullptr;
-		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", objName_->fullstring, typeid(objType).name(), objCparms_->fullval);
-		char rcmd[CMD_MAXLEN]; sprintf_s(rcmd, CMD_MAXLEN, "new %s(%s)", typeid(objType).name(), objCparms_->fullval);
-		try {
-			dbg->out(DBG_MSG_INFO, parentFunc_, "TRYING  : %s", cmd);
-			r(objCparms_->fullval);
-			dbg->out(DBG_MSG_INFO, parentFunc_, "SUCCESS : %s", cmd);
-		}
-		catch (std::exception exc) {
-			dbg->out(DBG_MSG_ERR, parentFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
+			dbg->out(DBG_MSG_ERR, callerFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
 			throw std::exception(dbg->msg);
 		}
 		return retObj;
+
 	}
+
+
+private:
+	void setParent(s0* parent_) { parent=parent_; }
+	void setDbgParms(sDbgParms* dbg_) { dbg=dbg_; }
+
 
 };
 
 
-#define sp0m(objType_, objName_, objCparms_){ \
-	objType_* objName_ = nullptr; \
-	sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", objName_->name->fullstring, typeid(objType_).name(), objCparms_->fullval); \
-}
+#define newname(nameMask_, ...) new s0(nameMask_, __VA_ARGS__)
