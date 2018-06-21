@@ -1,34 +1,4 @@
 ﻿  dbg.cpp
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(6): error C2065: 'cparms': undeclared identifier
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(6): error C2227: left of '->pcnt' must point to class/struct/union/generic type
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(6): note: type is 'unknown-type'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(7): error C2065: 'cparms': undeclared identifier
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(7): error C2227: left of '->pcnt' must point to class/struct/union/generic type
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(7): note: type is 'unknown-type'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(8): error C2065: 'cparms': undeclared identifier
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(8): error C2227: left of '->pcnt' must point to class/struct/union/generic type
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(8): note: type is 'unknown-type'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(9): error C2065: 'cparms': undeclared identifier
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(9): error C2227: left of '->pcnt' must point to class/struct/union/generic type
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(9): note: type is 'unknown-type'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(10): error C2065: 'cparms': undeclared identifier
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(10): error C2227: left of '->pcnt' must point to class/struct/union/generic type
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(10): note: type is 'unknown-type'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(17): error C2039: 's': is not a member of 'svard'
-  c:\users\gcaglion\dev\vvvv\s0\svard.h(8): note: see declaration of 'svard'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(19): error C2275: 'tFileInfo': illegal use of this type as an expression
-  c:\users\gcaglion\dev\vvvv\fileinfo\fileinfo.h(35): note: see declaration of 'tFileInfo'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(19): error C2061: syntax error: identifier 's0name'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(19): error C2039: 's': is not a member of 'svard'
-  c:\users\gcaglion\dev\vvvv\s0\svard.h(8): note: see declaration of 'svard'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(19): error C3861: 'safespawn0': identifier not found
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(19): error C2061: syntax error: identifier 's0parms'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(17): warning C4477: 'sprintf_s' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 's0 *'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(17): warning C4473: 'sprintf_s' : not enough arguments passed for format string
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(17): note: placeholders and their parameters expect 3 variadic arguments, but 2 were provided
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(17): note: the missing variadic argument 3 is required by format string '%s'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(36): error C2039: 's': is not a member of 'svard'
-  c:\users\gcaglion\dev\vvvv\s0\svard.h(8): note: see declaration of 'svard'
-c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(36): warning C4473: 'sprintf_s' : not enough arguments passed for format string
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(36): note: placeholders and their parameters expect 5 variadic arguments, but 4 were provided
-  c:\users\gcaglion\dev\vvvv\dbg\dbg.cpp(36): note: the missing variadic argument 5 is required by format string '%s'
+     Creating library C:\Users\gcaglion\dev\vvvv\x64\Debug\dbg.lib and object C:\Users\gcaglion\dev\vvvv\x64\Debug\dbg.exp
+  dbg.vcxproj -> C:\Users\gcaglion\dev\vvvv\x64\Debug\dbg.dll
+  dbg.vcxproj -> C:\Users\gcaglion\dev\vvvv\x64\Debug\dbg.pdb (Full PDB)

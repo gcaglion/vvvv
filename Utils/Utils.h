@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../CommonEnv.h"
+#include <time.h>
 
 EXPORT char* MyGetCurrentDirectory();
 EXPORT Bool getCurrentPath(char* oPath);
@@ -17,3 +18,5 @@ EXPORT void stripChar(char* istr, char c);
 EXPORT Bool getValuePair(char* istr, char* oName, char* oVal, char eqSign);
 EXPORT Bool isnumber(char* str);
 EXPORT Bool isInList(int soughtVal, int listLen, int* list);
+EXPORT void gettimestamp(char* timeS, size_t timeSsize);
+

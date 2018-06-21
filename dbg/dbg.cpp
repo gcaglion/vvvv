@@ -1,45 +1,42 @@
 #include "dbg.h"
 
-sDbg::sDbg(s0parmsdef) : s0(s0parmsval) {
-
-	//-- set default values for each parameter not set in cParms
-	if (cparms->pcnt<5) strcpy_s(outFilePath, MAX_PATH, DEFAULT_DBG_FPATH);
-	if (cparms->pcnt<4) pauseOnError=DEFAULT_DBG_PAUSERR;
-	if (cparms->pcnt<3) timing=DEFAULT_DBG_TIMING;
-	if (cparms->pcnt<2) dest=DEFAULT_DBG_DEST;
-	if (cparms->pcnt<1) verbose=DEFAULT_DBG_VERBOSITY;
-
-	//-- initialize stack
+sDbg::sDbg(bool verbose_, bool destscreen_, bool destfile_, char* outfilepath_) {
+	verbose=verbose_; destscreen=destscreen_, destfile=destfile_;
+	strcpy_s(outfilepath, MAX_PATH, outfilepath_);
 	stack[0]='\0';
-	
-	//-- create outFile, if so needed
-	char outFileName[MAX_PATH];
-	sprintf_s(outFileName, MAX_PATH, "%s(%p).%s", name->s, parent, (verbose) ? "log" : "err");
-	if (dest!=DBG_DEST_SCREEN) {
-		safespawn0(outFile, tFileInfo, new s0name("%s_File", name->s), new s0parms("%d, %s, %s", FILE_MODE_WRITE, outFilePath, outFileName));
+	outfile=nullptr;
+}
+sDbg::~sDbg() {
+	if (outfile!=nullptr) {
+		fflush(outfile);
+		fseek(outfile, 0, SEEK_END); // seek to end of file
+		size_t fsize = ftell(outfile); // get current file pointer
+		fclose(outfile);
+		if (fsize==0) remove(outfilefullname);
 	}
 }
 
-sDbg::~sDbg() {
+void sDbg::createOutFile(char* parentName, void* parentAddr) {
+	sprintf_s(outfilename, MAX_PATH, "%s(%p)_Dbg.%s", parentName, parentAddr, (verbose) ? "log" : "err");
+	sprintf_s(outfilefullname, MAX_PATH, "%s/%s", outfilepath, outfilename);
+	fopen_s(&outfile, outfilefullname, "w");
+	if (errno!=0) out(DBG_MSG_FAIL, __func__, "Error %d", errno);
 }
-
-void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask, ...) {
-	char tmpmsg[DBG_MSG_MAXLEN];
-
-	if (msgtype==OBJ_MSG_INFO&&!verbose) return;
-	va_list args;
-	va_start(args, msgMask);
-	vsprintf_s(tmpmsg, OBJ_MSG_MAXLEN, msgMask, args);
-	va_end(args);
+void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask_, ...) {
+	if (msgtype==DBG_MSG_INFO&&!verbose) return;
 
 	char indent[16]=""; for (int t=0; t<stackLevel; t++) strcat_s(indent, 16, "\t");
-	sprintf_s(msg, OBJ_MSG_MAXLEN, "%s%s->%s() %s %s \n", indent, parent->name->s, callerFunc_, (msgtype==OBJ_MSG_INFO) ? "INFO:  " : "ERROR: ", tmpmsg);
-	strcat_s(stack, DBG_STACK_MAXLEN, msg); strcat_s(stack, DBG_STACK_MAXLEN, "\n");
-	
+	char timestamp[50]; gettimestamp(timestamp, 50);
+	char tmpmsg[DBG_MSG_MAXLEN];
 
-	printf("%s", msg);
-	if (dest!=DBG_DEST_SCREEN) {
-		fprintf_s(outFile->handle, "%s", msg);
-	}
+	va_list va_args;
+	va_start(va_args, msgMask_);
+	vsprintf_s(tmpmsg, DBG_MSG_MAXLEN, msgMask_, va_args);
+	sprintf_s(msg, DBG_MSG_MAXLEN, "%s%s\n", indent, tmpmsg);
+	strcat_s(stack, DBG_STACK_MAXLEN, msg);
+	va_end(va_args);
+
+	if (destscreen) printf("%s", msg);
+	if (destfile && outfile!=nullptr) fprintf(outfile, "%s", msg);
 
 }

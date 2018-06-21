@@ -155,3 +155,18 @@ EXPORT Bool isInList(int soughtVal, int listLen, int* list) {
 	}
 	return false;
 }
+EXPORT void gettimestamp(char* timeS, size_t timeSsize) {
+	time_t ltime; // calendar time 
+	HANDLE TimeMutex;
+
+	TimeMutex=CreateMutex(NULL, TRUE, NULL);
+	WaitForSingleObject(TimeMutex, INFINITE);
+	ltime=time(NULL); // get current cal time 
+	//asctime_s(ftime, 50, localtime(&ltime));
+	tm* ltm=new tm();
+	localtime_s(ltm, &ltime);
+	asctime_s(timeS, timeSsize, ltm);
+	//ftime=asctime(localtime(&ltime));
+	//ftime[strlen(ftime)-1]='\0';
+	ReleaseMutex(TimeMutex);
+}

@@ -26,8 +26,5 @@
     <ClInclude Include="svard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dbg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

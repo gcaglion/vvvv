@@ -1,6 +1,8 @@
 #pragma once
 #include "../CommonEnv.h"
-#include "dbg.h"
+#include "../dbg/dbg.h"
+#include "svard.h"
+#include <typeinfo>
 
 #define OBJ_NAME_MAXLEN 128
 #define OBJ_MAX_CHILDREN 64
@@ -9,9 +11,14 @@
 #define OBJ_PARMS_MASK_MAXLEN	125
 #define OBJ_PARMS_VAL_MAXLEN	1024
 
-#include "svard.h"
-#include <typeinfo>
+struct sName {
+	char s[OBJ_NAME_MAXLEN];
+	EXPORT sName(char* nameMask_, ...);
+};
+#define newsname(nameMask_, ...) new sName(nameMask_, __VA_ARGS__)
 
+#define s0parmsdef s0* parent_, sName* sname_, sDbg* dbg_
+#define s0parmsval parent_, sname_, dbg_
 struct s0 {
 
 	char name[OBJ_NAME_MAXLEN];
@@ -21,30 +28,23 @@ struct s0 {
 	int childrenCnt;
 	s0* child[OBJ_MAX_CHILDREN];
 	//-- debugging
-	sDbgParms* dbg;
-	FILE* dbgoutfile;
+	sDbg* dbg;
 	
-	EXPORT s0(s0* parent_, sDbgParms* dbg_, char* name_);
+	EXPORT s0(s0parmsdef);
 	EXPORT virtual ~s0();
-	EXPORT s0(char* name_, ...);
-	EXPORT void setParms(s0* parent, sDbgParms* dbg_);
-	//EXPORT static char* getName(char* oName_, char* nameMask_, ...);
 
-	 template <class objT, class ...classArgs> EXPORT objT* _spawn(const char* callerFunc_, s0* childs0p_, sDbgParms* childDbg_, classArgs... objCargs) {
-
-		 childs0p_->setParms(this, childDbg_);
-
+	template <class objT, class ...classArgs> objT* _spawn(const char* callerFunc_, sName* childSname_, sDbg* childDbg_, classArgs... childCargs){
 		svard* childSvard=new svard();
-
-		childSvard->variadic(objCargs...);
-		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", childs0p_->name, typeid(objT).name(), childSvard->fullval);
+		childSvard->variadic(childCargs...);
+		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", childSname_->s, typeid(objT).name(), childSvard->fullval);
 
 		objT* retObj;
 		try {
-			childs0p_->dbg=childDbg_;
 			dbg->out(DBG_MSG_INFO, callerFunc_, "TRYING  : %s", cmd);
-			retObj = new objT(childs0p_, objCargs...);
+			retObj = new objT(this, childSname_, childDbg_, childCargs...);
 			dbg->out(DBG_MSG_INFO, callerFunc_, "SUCCESS : %s", cmd);
+			child[childrenCnt]=retObj;
+			childrenCnt++;
 		}
 		catch (std::exception exc) {
 			dbg->out(DBG_MSG_ERR, callerFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
@@ -54,16 +54,8 @@ struct s0 {
 
 	}
 
-
-private:
-	void setParent(s0* parent_) { parent=parent_; }
-	void setDbgParms(sDbgParms* dbg_) { dbg=dbg_; }
-
-
 };
 
-
-#define newname(nameMask_, ...) new s0(nameMask_, __VA_ARGS__)
-#define safespawn(objVarName_, className_, objS0Name_, objDbg_, ...) objVarName_ = s0p->_spawn<className_>(__func__, objS0Name_, objDbg_, __VA_ARGS__)
+#define safespawn(objVarName_, className_, objSname_, objDbg_, ...) objVarName_ = _spawn<className_>(__func__, objSname_, objDbg_, __VA_ARGS__)
 
 
