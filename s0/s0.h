@@ -30,7 +30,7 @@ struct s0 {
 	EXPORT void setParms(s0* parent, sDbgParms* dbg_);
 	//EXPORT static char* getName(char* oName_, char* nameMask_, ...);
 
-	 template <class objT, class ...classArgs> EXPORT objT* ___spawn(const char* callerFunc_, s0* childs0p_, sDbgParms* childDbg_, classArgs... objCargs) {
+	 template <class objT, class ...classArgs> EXPORT objT* _spawn(const char* callerFunc_, s0* childs0p_, sDbgParms* childDbg_, classArgs... objCargs) {
 
 		 childs0p_->setParms(this, childDbg_);
 
@@ -64,3 +64,6 @@ private:
 
 
 #define newname(nameMask_, ...) new s0(nameMask_, __VA_ARGS__)
+#define safespawn(objVarName_, className_, objS0Name_, objDbg_, ...) objVarName_ = s0p->_spawn<className_>(__func__, objS0Name_, objDbg_, __VA_ARGS__)
+
+

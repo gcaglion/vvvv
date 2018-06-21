@@ -58,10 +58,13 @@ struct sK {
 	s0* s0p;
 
 	int p1; char* p2;
-
+	
 	sK(s0* s0p_, int p1_, char* p2_) {
 		s0p=s0p_; p1=p1_; p2=p2_;
+		if(p1>1) fail("viosdkhskad");
 	}
+
+
 
 };
 
@@ -71,15 +74,14 @@ struct sRoot {
 	s0* s0p;
 
 	sK* sK1;
+	sK* sK2;
 
 	sRoot(s0* s0p_) {
-		s0p=s0p_; 
-		s0p->setParms(nullptr, newdbg());
+		s0p=s0p_;
 
-		int vp1=3; char* vp2="vp2";
-		
-		sK1 = s0p->___spawn<sK>(__func__,  newname("sk%dname", 1), newdbg(), vp1, vp2);
-		
+		char* vp2="vp2";		
+		safespawn(sK1, sK, newname("sk%dname", 1), newdbg(), 1, vp2);
+		safespawn(sK2, sK, newname("sk%dname", 2), newdbg(), 2, vp2);
 	}
 
 };

@@ -31,6 +31,8 @@ s0::s0(char* nameMask_, ...) {
 s0::~s0() {
 	 for (int c=childrenCnt-1; c>=0; c--) {
 		 delete child[c];
+		 delete dbgoutfile;
+		 delete dbg;
 	 }
 
  }

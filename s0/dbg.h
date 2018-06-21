@@ -16,6 +16,11 @@
 #define DBG_MSG_FAIL  2
 //--
 
+#define info(msgMask_, ...) s0p->dbg->out(DBG_MSG_INFO, __func__, msgMask_, __VA_ARGS__)
+#define err(msgMask_, ...) s0p->dbg->out(DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__)
+#define fail(msgMask_, ...) { s0p->dbg->out(DBG_MSG_FAIL, __func__, msgMask_, __VA_ARGS__); throw std::exception(s0p->dbg->msg); }
+
+
 struct sDbgParms {
 	int stackLevel;
 	bool verbose;
@@ -39,7 +44,6 @@ struct sDbgParms {
 	void createOutFile(char* parentName, void* parentAddr) {
 		sprintf_s(outfilename, MAX_PATH, "%s(%p)_Dbg.%s", parentName, parentAddr, (verbose)?"log":"err");
 		sprintf_s(outfilefullname, MAX_PATH, "%s/%s", outfilepath, outfilename);
-		outfile=nullptr;
 		fopen_s(&outfile, outfilefullname, "w");
 		if (errno!=0) out(DBG_MSG_FAIL, __func__, "Error %d", errno);
 	}
@@ -48,10 +52,12 @@ struct sDbgParms {
 		if (msgtype==DBG_MSG_INFO&&!verbose) return;
 
 		char indent[16]=""; for (int t=0; t<stackLevel; t++) strcat_s(indent, 16, "\t");
+		char tmpmsg[DBG_MSG_MAXLEN];
 
 		va_list va_args;
 		va_start(va_args, msgMask_);
-		vsprintf_s(msg, DBG_MSG_MAXLEN, msgMask_, va_args); strcat_s(msg, DBG_MSG_MAXLEN, "\n");
+		vsprintf_s(tmpmsg, DBG_MSG_MAXLEN, msgMask_, va_args);
+		sprintf_s(msg, DBG_MSG_MAXLEN, "%s%s\n", indent, tmpmsg);
 		strcat_s(stack, DBG_STACK_MAXLEN, msg); 
 		va_end(va_args);
 
