@@ -15,18 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ParamDecoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParamMgr.cpp">
+    <ClCompile Include="ConfigMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ParamMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParamMgr_limits.h">
+    <ClInclude Include="ConfigMgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -39,4 +39,5 @@ void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask_, ...) {
 	if (destscreen) printf("%s", msg);
 	if (destfile && outfile!=nullptr) fprintf(outfile, "%s", msg);
 
+	if(msgtype==DBG_MSG_FAIL) throw std::exception(msg);
 }

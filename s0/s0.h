@@ -33,10 +33,10 @@ struct s0 {
 	EXPORT s0(s0parmsdef);
 	EXPORT virtual ~s0();
 
-	template<class className, class methodName, class ...methodArgs> void _callM(const char* callerFunc_, className* obj, char* metS, methodName met, methodArgs... mArgs) {
+	template<class className, class methodName, class ...methodArgs> void _callM(const char* callerFunc_, char* objVarName_, className* obj, char* metS, methodName met, methodArgs... mArgs) {
 		svard* callSvard=new svard();
 		callSvard->variadic(mArgs...);
-		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s->%s(%s)", obj->name, metS, callSvard->fullval);
+		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s->%s(%s)", objVarName_, metS, callSvard->fullval);
 
 		try {
 			dbg->out(DBG_MSG_INFO, callerFunc_, "TRYING  : %s", cmd);
@@ -44,17 +44,16 @@ struct s0 {
 			dbg->out(DBG_MSG_INFO, callerFunc_, "SUCCESS : %s", cmd);
 		}
 		catch (std::exception exc) {
-			dbg->out(DBG_MSG_ERR, callerFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
-			throw std::exception(dbg->msg);
+			dbg->out(DBG_MSG_FAIL, callerFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
 		}
 		
 	}
-	#define safecall(className_, objName_, methodName_, ...) _callM<className_>(__func__, objName_, #methodName_, &className_::methodName_, __VA_ARGS__)
+	#define safecall(className_, objName_, methodName_, ...) _callM<className_>(__func__, #objName_, objName_, #methodName_, &className_::methodName_, __VA_ARGS__)
 
-	template <class objT, class ...classArgs> objT* _spawn(const char* callerFunc_, sName* childSname_, sDbg* childDbg_, classArgs... childCargs){
+	template <class objT, class ...classArgs> objT* _spawn(const char* callerFunc_, char* objVarName_, sName* childSname_, sDbg* childDbg_, classArgs... childCargs){
 		svard* childSvard=new svard();
 		childSvard->variadic(childCargs...);
-		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", childSname_->s, typeid(objT).name(), childSvard->fullval);
+		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", objVarName_, typeid(objT).name(), childSvard->fullval);
 
 		objT* retObj;
 		try {
@@ -65,8 +64,7 @@ struct s0 {
 			childrenCnt++;
 		}
 		catch (std::exception exc) {
-			dbg->out(DBG_MSG_ERR, callerFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
-			throw std::exception(dbg->msg);
+			dbg->out(DBG_MSG_FAIL, callerFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
 		}
 		return retObj;
 
@@ -74,6 +72,6 @@ struct s0 {
 
 };
 
-#define safespawn(objVarName_, className_, objSname_, objDbg_, ...) objVarName_ = _spawn<className_>(__func__, objSname_, objDbg_, __VA_ARGS__)
+#define safespawn(objVarName_, className_, objSname_, objDbg_, ...) objVarName_ = _spawn<className_>(__func__, #objVarName_, objSname_, objDbg_, __VA_ARGS__)
 
 

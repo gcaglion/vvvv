@@ -28,9 +28,12 @@ struct svard {
 		pcnt++;
 	}
 
+	void variadic() {}
+
 	template <class T> void variadic(T a) {
 		select(a);
 		addParm(a);
+		if (pcnt==1) fullval[strlen(fullval)-2]='\0';
 	}
 
 	template <class T, class ...Args> void variadic(T a, Args... args) {

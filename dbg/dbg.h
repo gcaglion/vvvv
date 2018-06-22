@@ -20,7 +20,7 @@
 
 #define info(msgMask_, ...) dbg->out(DBG_MSG_INFO, __func__, msgMask_, __VA_ARGS__)
 #define err(msgMask_, ...) dbg->out(DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__)
-#define fail(msgMask_, ...) { dbg->out(DBG_MSG_FAIL, __func__, msgMask_, __VA_ARGS__); throw std::exception(dbg->msg); }
+#define fail(msgMask_, ...) dbg->out(DBG_MSG_FAIL, __func__, msgMask_, __VA_ARGS__)
 
 struct sDbg {
 	int stackLevel;

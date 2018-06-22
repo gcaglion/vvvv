@@ -5,6 +5,7 @@ sName::sName(char* nameMask_, ...) {
 	va_start(va_args, nameMask_);
 	vsprintf_s(s, OBJ_NAME_MAXLEN, nameMask_, va_args);
 	va_end(va_args);
+	stripChar(s, ' ');
 }
 
 s0::s0(s0parmsdef){

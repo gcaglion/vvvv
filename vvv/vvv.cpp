@@ -1,6 +1,7 @@
 #include "../CommonEnv.h"
 
 #include "../s0/s0.h"
+#include "../ConfigMgr/ConfigMgr.h"
 
 struct sQ : s0 {
 	int p1; char* p2;
@@ -29,6 +30,8 @@ struct sRoot : s0 {
 	sQ* sQ2;
 	sQ* sQ3;
 
+	sConfigMgr* xmlParms;
+
 	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {}
 
 	void run() {
@@ -36,13 +39,16 @@ struct sRoot : s0 {
 		char* vp1="11111GGGG";
 		char* vp2="22222GGGG";
 		char* vp3="33333GGFF";
-		sQ1= _spawn<sQ>(__func__, newsname("dd"), newdbg(), 3, vp3);
+		sQ1= _spawn<sQ>(__func__, "sQ1", newsname("dd"), newdbg(), 3, vp3);
 
 		safespawn(sQ1, sQ, newsname("sQ%dname", 1), newdbg(), 1, vp1);
-		safespawn(sQ2, sQ, newsname("sQ%dname", 2), newdbg(), 2, vp2);
+		//safespawn(sQ2, sQ, newsname("sQ%dname", 2), newdbg(), 2, vp2);
 		safespawn(sQ3, sQ, newsname("sQ%dname", 3), newdbg(), 3, vp3);
 
 		safecall(sQ, sQ1, met1, 1, vp1);
+
+		char* configFile="c:/temp/client.xml";
+		safespawn(xmlParms, sConfigMgr, newsname("main XML configuration"), newdbg(), configFile);
 
 	}
 
