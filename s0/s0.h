@@ -33,6 +33,24 @@ struct s0 {
 	EXPORT s0(s0parmsdef);
 	EXPORT virtual ~s0();
 
+	template<class className, class methodName, class ...methodArgs> void _callM(const char* callerFunc_, className* obj, char* metS, methodName met, methodArgs... mArgs) {
+		svard* callSvard=new svard();
+		callSvard->variadic(mArgs...);
+		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s->%s(%s)", obj->name, metS, callSvard->fullval);
+
+		try {
+			dbg->out(DBG_MSG_INFO, callerFunc_, "TRYING  : %s", cmd);
+			(obj->*met)(mArgs...);
+			dbg->out(DBG_MSG_INFO, callerFunc_, "SUCCESS : %s", cmd);
+		}
+		catch (std::exception exc) {
+			dbg->out(DBG_MSG_ERR, callerFunc_, "FAILURE : %s . Exception: %s", cmd, exc.what());
+			throw std::exception(dbg->msg);
+		}
+		
+	}
+	#define safecall(className_, objName_, methodName_, ...) _callM<className_>(__func__, objName_, #methodName_, &className_::methodName_, __VA_ARGS__)
+
 	template <class objT, class ...classArgs> objT* _spawn(const char* callerFunc_, sName* childSname_, sDbg* childDbg_, classArgs... childCargs){
 		svard* childSvard=new svard();
 		childSvard->variadic(childCargs...);

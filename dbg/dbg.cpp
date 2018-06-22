@@ -32,7 +32,7 @@ void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask_, ...) {
 	va_list va_args;
 	va_start(va_args, msgMask_);
 	vsprintf_s(tmpmsg, DBG_MSG_MAXLEN, msgMask_, va_args);
-	sprintf_s(msg, DBG_MSG_MAXLEN, "%s%s\n", indent, tmpmsg);
+	sprintf_s(msg, DBG_MSG_MAXLEN, "%s %s%s\n", timestamp, indent, tmpmsg);
 	strcat_s(stack, DBG_STACK_MAXLEN, msg);
 	va_end(va_args);
 

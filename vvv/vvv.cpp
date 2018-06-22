@@ -12,6 +12,13 @@ struct sQ : s0 {
 		}
 	}
 
+	void met1(int mp1, char* mp2) {
+		printf("MMMMMMMMMMM");
+	}
+	void met2(int mp1, char* mp2) {
+		printf("NNNNNNNNNNN");
+	}
+
 	~sQ() {}
 };
 
@@ -22,8 +29,7 @@ struct sRoot : s0 {
 	sQ* sQ2;
 	sQ* sQ3;
 
-	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {
-	}
+	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {}
 
 	void run() {
 
@@ -35,6 +41,9 @@ struct sRoot : s0 {
 		safespawn(sQ1, sQ, newsname("sQ%dname", 1), newdbg(), 1, vp1);
 		safespawn(sQ2, sQ, newsname("sQ%dname", 2), newdbg(), 2, vp2);
 		safespawn(sQ3, sQ, newsname("sQ%dname", 3), newdbg(), 3, vp3);
+
+		safecall(sQ, sQ1, met1, 1, vp1);
+
 	}
 
 	~sRoot(){}
@@ -45,6 +54,7 @@ struct sRoot : s0 {
 
 int main(int argc, char* argv[]) {
 	int ret;
+
 		
 	sRoot* root=nullptr;
 	try {
@@ -55,6 +65,7 @@ int main(int argc, char* argv[]) {
 	}
 	catch (std::exception exc) {
 		printf("main() failed. exception=%s\n", exc.what());
+		printf("root stack:\n%s\n", root->dbg->stack);
 		ret=-1;
 	}
 
