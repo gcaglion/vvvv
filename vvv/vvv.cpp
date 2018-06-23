@@ -44,7 +44,7 @@ struct sRoot : s0 {
 
 		safecall(sQ, sQ1, met1, 1, vp1);
 
-		char* configFile="c:/temp/client_short.xml";
+		char* configFile="c:/temp/client.xml";
 		safespawn(xmlConfigFull, sConfigProps, newsname("full XML configuration"), newdbg(), configFile);
 
 	}
