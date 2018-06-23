@@ -28,7 +28,7 @@ struct sRoot : s0 {
 	sQ* sQ2;
 	sQ* sQ3;
 
-	sConfigMgr* xmlParms;
+	sConfigProps* xmlConfigFull;
 
 	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {}
 
@@ -45,8 +45,7 @@ struct sRoot : s0 {
 		safecall(sQ, sQ1, met1, 1, vp1);
 
 		char* configFile="c:/temp/client_short.xml";
-		safespawn(xmlParms, sConfigMgr, newsname("main XML configuration"), newdbg(), configFile);
-
+		safespawn(xmlConfigFull, sConfigProps, newsname("full XML configuration"), newdbg(), configFile);
 
 	}
 
@@ -54,12 +53,9 @@ struct sRoot : s0 {
 
 };
 
-
-
 int main(int argc, char* argv[]) {
 	int ret;
 
-		
 	sRoot* root=nullptr;
 	try {
 		root=new sRoot(newdbg());

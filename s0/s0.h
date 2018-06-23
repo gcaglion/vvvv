@@ -71,7 +71,7 @@ struct s0 {
 
 };
 
-#define safecall(className_, objName_, methodName_, ...) _callM<className_>(__func__, #objName_, objName_, #methodName_, &className_::methodName_, __VA_ARGS__)
+#define safecall(className_, objName_, methodName_, ...) _callM<className_>(__func__, objName_->name, objName_, #methodName_, &className_::methodName_, __VA_ARGS__)
 #define safespawn(objVarName_, className_, objSname_, objDbg_, ...) objVarName_ = _spawn<className_>(__func__, #objVarName_, objSname_, objDbg_, __VA_ARGS__)
 
 

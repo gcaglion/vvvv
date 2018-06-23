@@ -164,7 +164,6 @@ EXPORT void gettimestamp(char* timeS, size_t timeSsize) {
 	ltime=time(NULL); // get current cal time 
 	tm* ltm=new tm();
 	localtime_s(ltm, &ltime);
-	asctime_s(timeS, timeSsize, ltm);
-	timeS[strlen(timeS)-1]='\0';
+	sprintf_s(timeS, 18, "%d%02d%02d-%02d:%02d:%02d", 1900+ltm->tm_year, ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 	ReleaseMutex(TimeMutex);
 }
