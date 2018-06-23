@@ -24,8 +24,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbg", "dbg\dbg.vcxproj", "{62FA1017-2C9F-4115-A45C-F22AE8E0D767}"
+	ProjectSection(ProjectDependencies) = postProject
+		{72AFD829-9419-401D-9B8D-CEACC96B7C70} = {72AFD829-9419-401D-9B8D-CEACC96B7C70}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConfigMgr", "ConfigMgr\ConfigMgr.vcxproj", "{13B9F65A-B827-44ED-A7D1-351C20B90D8F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{62FA1017-2C9F-4115-A45C-F22AE8E0D767} = {62FA1017-2C9F-4115-A45C-F22AE8E0D767}
+		{F74613D8-F080-4B06-9D51-3963DE071E4C} = {F74613D8-F080-4B06-9D51-3963DE071E4C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

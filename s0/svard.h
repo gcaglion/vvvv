@@ -20,7 +20,7 @@ struct svard {
 	void select(char* a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "\"%s\", "); }
 	void select(int a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "%d, "); }
 	void select(numtype a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "%f, "); }
-	void select(long* a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "%p, "); }
+	void select(void* a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "%p, "); }
 
 	template <class T> void addParm(T a) {
 		sprintf_s(pvalS[pcnt], PARM_VAL_MAXLEN, pmask[pcnt], a);
@@ -41,10 +41,6 @@ struct svard {
 		addParm(a);
 		variadic(args...);
 		if (pcnt>0) fullval[strlen(fullval)-2]='\0';
-	}
-	template <class T, class ...Args> svard* getsvard(T a, Args... args) {
-		variadic(a, args...);
-		return this;
 	}
 
 	svard() {

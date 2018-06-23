@@ -24,7 +24,7 @@ s0::s0(s0parmsdef){
 	//-- create new sDbgParms* object inside s0 constructor, and copy dbg_ parms into it
 	dbg=new sDbg(*dbg_);
 	//-- we can now delete dbg_
-	delete dbg_;
+	//delete dbg_;
 	//-- sets dbg stackLevel and creates dbg outfile AFTER dbg creation, to get s0 object name
 	dbg->stackLevel=stackLevel;
 	if (dbg->destfile) dbg->createOutFile(name, this);

@@ -8,16 +8,14 @@ struct sQ : s0 {
 
 	sQ(s0parmsdef, int p1_, char* p2_) : s0(s0parmsval) {
 		p1=p1_; p2=p2_;
-		if (p1==2) {
-			fail("forced failure; p1=%d", p1);
-		}
+		if (p1==2) fail("forced failure; p1=%d", p1);
 	}
 
 	void met1(int mp1, char* mp2) {
-		printf("MMMMMMMMMMM");
+		printf("MMMMMMMMMMM\n");
 	}
 	void met2(int mp1, char* mp2) {
-		printf("NNNNNNNNNNN");
+		printf("NNNNNNNNNNN\n");
 	}
 
 	~sQ() {}
@@ -39,7 +37,6 @@ struct sRoot : s0 {
 		char* vp1="11111GGGG";
 		char* vp2="22222GGGG";
 		char* vp3="33333GGFF";
-		sQ1= _spawn<sQ>(__func__, "sQ1", newsname("dd"), newdbg(), 3, vp3);
 
 		safespawn(sQ1, sQ, newsname("sQ%dname", 1), newdbg(), 1, vp1);
 		//safespawn(sQ2, sQ, newsname("sQ%dname", 2), newdbg(), 2, vp2);
@@ -47,8 +44,9 @@ struct sRoot : s0 {
 
 		safecall(sQ, sQ1, met1, 1, vp1);
 
-		char* configFile="c:/temp/client.xml";
+		char* configFile="c:/temp/client_short.xml";
 		safespawn(xmlParms, sConfigMgr, newsname("main XML configuration"), newdbg(), configFile);
+
 
 	}
 
