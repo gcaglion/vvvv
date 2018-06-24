@@ -18,6 +18,7 @@ bool stripLastStep(char* fullDesc, char* oStrippedDesc) {
 
 sConfigProps::sConfigProps(s0parmsdef, char* pFileFullName, int CLoverridesCnt_, char* CLoverride_[]) : s0(s0parmsval) {
 
+	itemsCnt=0;
 	parmsCnt=0;
 	
 	CLoverridesCnt=CLoverridesCnt_; CLoverride=CLoverride_;
@@ -60,7 +61,7 @@ void sConfigProps::parse() {
 
 	char fullKey[XMLKEY_NAME_MAXLEN]="";
 
-	rewind(parmsFile);
+	//rewind(parmsFile);
 	while (fgets(vLine, XMLLINE_MAXLEN, parmsFile)!=NULL) {
 		//-- strip spaces & tabs
 		stripChar(vLine, ' ');
@@ -76,7 +77,7 @@ void sConfigProps::parse() {
 			UpperCase(readKeyDesc);
 			if (strlen(fullKey)>0) strcat_s(fullKey, XMLKEY_NAME_MAXLEN, ".");
 			strcat_s(fullKey, XMLKEY_NAME_MAXLEN, readKeyDesc);
-			info("found new key: <%s>", readKeyDesc);
+			safespawn(item[itemsCnt], sConfigItem, newsname(readKeyDesc), dbg, XMLKEY, readKeyDesc);
 		} else 	if (vLine[0]=='<' && vLine[1]=='/' && vLine[llen-1]=='>') {
 			//-- key end
 			memcpy_s(readKeyDesc, XMLKEY_NAME_MAXLEN, &vLine[2], llen-3); readKeyDesc[llen-3]='\0';
@@ -87,18 +88,24 @@ void sConfigProps::parse() {
 			//-- parameter
 			if (!getValuePair(vLine, readParmDesc, readParmVal, '=')) fail("wrong parameter format: %s", readParmVal);
 			UpperCase(readParmDesc);
-			info("found new parm: %s = %s", readParmDesc, readParmVal);
-			//-- add parameter full name to parmName[][]
-			strcpy_s(parmName[parmsCnt], XMLKEY_NAME_MAXLEN, fullKey);
-			strcat_s(parmName[parmsCnt], XMLKEY_NAME_MAXLEN, ".");
-			strcat_s(parmName[parmsCnt], XMLKEY_NAME_MAXLEN, readParmDesc);
-			//-- also add parameter value[s] split array parameters
-			parmValsCnt[parmsCnt]=cslToArray(readParmVal, ',', parmVal[parmsCnt]);
-			parmsCnt++;
+			safespawn(item[itemsCnt], sConfigItem, newsname(readParmDesc), dbg, XMLPARM, readParmDesc, readParmVal);
+
 		}
 
 	}
 
+}
+void sConfigProps::buildSoughtParmFull(const char* soughtParmDesc_) {
+	char soughtKey[XMLKEY_NAME_MAXLEN];
+	if (soughtParmDesc_[0]=='.'||strlen(currentKey)==0) {
+		soughtKey[0]='\0';
+	} else {
+		strcpy_s(soughtKey, XMLKEY_NAME_MAXLEN, currentKey);
+		strcat_s(soughtKey, ".");
+	}
+	strcpy_s(soughtParmFull, XMLKEY_NAME_MAXLEN, soughtKey);
+	strcat_s(soughtParmFull, soughtParmDesc_);
+	UpperCase(soughtParmFull);
 }
 
 //-- specific, single value: int(with or without enums), numtype, char*
@@ -144,4 +151,68 @@ void sConfigProps::getx(numtype** oVar) {
 	for (int e=0; e<parmValsCnt[foundParmId]; e++) {
 		(*oVar)[e]=(numtype)atof(parmVal[foundParmId][e]);
 	}
+}
+
+sConfigItem::sConfigItem(s0parmsdef, int type_, char* desc_, char* val_) : s0(s0parmsval) {
+	type=type_;
+	parmsFile=((sConfigItem*)parent)->parmsFile;
+
+	//-- parse
+	if(type==XMLKEY) safecall(sConfigItem, this, parse);
+
+}
+sConfigItem::sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_, char* CLoverride_[]) : s0(s0parmsval) {
+
+	CLoverridesCnt=CLoverridesCnt_; CLoverride=CLoverride_;
+	//-- handle command-line overrides ...
+
+	//-- open file
+	fopen_s(&parmsFile, pFileFullName, "r");
+	if (errno!=0) fail("Could not open configuration file %s . Error %d", pFileFullName, errno);
+
+	//-- parse
+	safecall(sConfigItem, this, parse);
+
+}
+void sConfigItem::parse() {
+
+	size_t llen;
+	char vLine[XMLLINE_MAXLEN];
+	char readKeyDesc[XMLKEY_NAME_MAXLEN];
+	char readParmDesc[XMLPARM_NAME_MAXLEN];
+	char readParmVal[XMLPARM_VAL_MAXCNT*XMLPARM_VAL_MAXLEN];
+	char fullKey[XMLKEY_NAME_MAXLEN]="";
+
+	while (fgets(vLine, XMLLINE_MAXLEN, parmsFile)!=NULL) {
+		//-- strip spaces & tabs
+		stripChar(vLine, ' ');
+		stripChar(vLine, '\t');
+		stripChar(vLine, '\n');
+		llen=strlen(vLine);
+		if (llen==0) continue;			// empty line
+		if (vLine[0]=='#') continue;	// comment
+
+		if (vLine[0]=='<' && vLine[1]!='/' && vLine[llen-1]=='>') {
+			//-- key start
+			memcpy_s(readKeyDesc, XMLKEY_NAME_MAXLEN, &vLine[1], llen-2); readKeyDesc[llen-2]='\0';
+			UpperCase(readKeyDesc);
+			if (strlen(fullKey)>0) strcat_s(fullKey, XMLKEY_NAME_MAXLEN, ".");
+			strcat_s(fullKey, XMLKEY_NAME_MAXLEN, readKeyDesc);
+			safespawn(item[childrenCnt], sConfigItem, newsname(readKeyDesc), dbg, XMLKEY, readKeyDesc);
+		} else 	if (vLine[0]=='<' && vLine[1]=='/' && vLine[llen-1]=='>') {
+			//-- key end
+			memcpy_s(readKeyDesc, XMLKEY_NAME_MAXLEN, &vLine[2], llen-3); readKeyDesc[llen-3]='\0';
+			UpperCase(readKeyDesc);
+			//-- strip fullKey of the rightmost key
+			stripLastStep(fullKey, fullKey);
+		} else {
+			//-- parameter
+			if (!getValuePair(vLine, readParmDesc, readParmVal, '=')) fail("wrong parameter format: %s", readParmVal);
+			UpperCase(readParmDesc);
+			safespawn(item[childrenCnt], sConfigItem, newsname(readParmDesc), dbg, XMLPARM, readParmDesc, readParmVal);
+
+		}
+
+	}
+
 }

@@ -7,6 +7,8 @@
 //--
 #define XMLKEY_MAXCNT	1024
 //--
+#define XMLITEMS_MAXCNT	1024
+//--
 #define XMLKEY_NAME_MAXLEN	1024
 //--
 #define XMLPARM_MAXCNT		1000
@@ -17,18 +19,40 @@
 //--
 #define XMLKEY 0
 #define XMLPARM 1
+//--
+#define XML_MAX_RECURSION	4
 
+struct sConfigItem : s0 {
+
+	FILE* parmsFile;
+	int CLoverridesCnt;
+	char** CLoverride;
+
+	sConfigItem* item[OBJ_MAX_CHILDREN];
+	//--
+	int type;
+	//--
+	//-- KeyDesc, ParmDesc are stored in s0::name
+	//--
+	EXPORT sConfigItem(s0parmsdef, int type_, char* desc_, char* val_=nullptr);
+	EXPORT sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_=0, char* CLoverride_[]=nullptr);
+	
+	EXPORT void parse();
+
+};
 struct sConfigProps : s0 {
 
 	FILE* parmsFile=nullptr;
 	int CLoverridesCnt;
 	char** CLoverride;
 
+	int itemsCnt;
+	sConfigItem* item[XMLITEMS_MAXCNT];
+
 	int parmsCnt;
 	char parmName[XMLPARM_MAXCNT][XMLPARM_NAME_MAXLEN];
 	int parmValsCnt[XMLPARM_MAXCNT];
 	char*** parmVal;
-	//char parmVal[XMLPARM_MAXCNT][XMLPARM_VAL_MAXCNT][XMLPARM_VAL_MAXLEN];
 	int foundParmId;
 
 	char currentKey[XMLKEY_NAME_MAXLEN];
@@ -67,18 +91,7 @@ struct sConfigProps : s0 {
 	EXPORT void getx(numtype** oVar);
 
 private:
-	void buildSoughtParmFull(const char* soughtParmDesc_) {
-		char soughtKey[XMLKEY_NAME_MAXLEN];
-		if (soughtParmDesc_[0]=='.'||strlen(currentKey)==0) {
-			soughtKey[0]='\0';
-		} else {
-			strcpy_s(soughtKey, XMLKEY_NAME_MAXLEN, currentKey);
-			strcat_s(soughtKey, ".");
-		}
-		strcpy_s(soughtParmFull, XMLKEY_NAME_MAXLEN, soughtKey);
-		strcat_s(soughtParmFull, soughtParmDesc_);
-		UpperCase(soughtParmFull);
-	}
+	void buildSoughtParmFull(const char* soughtParmDesc_);
 
 
 }; 

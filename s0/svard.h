@@ -9,6 +9,7 @@
 
 struct svard {
 	int  pcnt;
+	bool lastp;
 	char pmask[PARMS_MAXCNT][PARM_MASK_LEN];	// "%s", "%d%, "%f", "p". 
 	char   pvalS[PARMS_MAXCNT][PARM_VAL_MAXLEN];
 	int    pvalI[PARMS_MAXCNT];
@@ -29,22 +30,28 @@ struct svard {
 	}
 
 	void variadic() {}
+	
+	void cutLastComma(){
+		fullval[strlen(fullval)-2]='\0';
+		lastp=true;
+	}
 
 	template <class T> void variadic(T a) {
 		select(a);
 		addParm(a);
-		if (pcnt==1) fullval[strlen(fullval)-2]='\0';
+		if (pcnt==1) cutLastComma();
 	}
 
 	template <class T, class ...Args> void variadic(T a, Args... args) {
 		select(a);
 		addParm(a);
 		variadic(args...);
-		if (pcnt>0) fullval[strlen(fullval)-2]='\0';
+		if (pcnt>0 && !lastp) cutLastComma();
 	}
 
 	svard() {
 		pcnt=0;
+		lastp=false;
 		fullval[0]='\0';
 	}
 	

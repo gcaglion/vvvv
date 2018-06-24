@@ -39,14 +39,13 @@ struct s0 {
 		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s->%s(%s)", objVarName_, metS, callSvard->fullval);
 
 		try {
-			info("TRYING  : %s", cmd);
+			info("%s TRYING  : %s", name, cmd);
 			(obj->*met)(mArgs...);
-			info("SUCCESS : %s", cmd);
+			info("%s SUCCESS : %s", name, cmd);
 		}
 		catch (std::exception exc) {
-			fail("FAILURE : %s . Exception: %s", cmd, exc.what());
+			fail("%s FAILURE : %s . Exception: %s", name, cmd, exc.what());
 		}
-		
 	}
 
 	template <class objT, class ...classArgs> objT* _spawn(const char* callerFunc_, char* objVarName_, sName* childSname_, sDbg* childDbg_, classArgs... childCargs){
@@ -56,17 +55,16 @@ struct s0 {
 
 		objT* retObj;
 		try {
-			info("TRYING  : %s", cmd);
+			info("%s TRYING  : %s", name, cmd);
 			retObj = new objT(this, childSname_, childDbg_, childCargs...);
-			info("SUCCESS : %s", cmd);
+			info("%s SUCCESS : %s", name, cmd);
 			child[childrenCnt]=retObj;
 			childrenCnt++;
 		}
 		catch (std::exception exc) {
-			fail("FAILURE : %s . Exception: %s", cmd, exc.what());
+			fail("%s FAILURE : %s . Exception: %s", name, cmd, exc.what());
 		}
 		return retObj;
-
 	}
 
 };

@@ -22,13 +22,13 @@ struct sQ : s0 {
 };
 
 struct sRoot : s0 {
-	//s0* s0p;
 
 	sQ* sQ1;
 	sQ* sQ2;
 	sQ* sQ3;
 
-	sConfigProps* xmlConfigFull;
+	sConfigProps*	xmlConfigFull;	//-- Whole Config File
+	sConfigItem* xmlForecasterRoot;
 
 	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {}
 
@@ -45,7 +45,9 @@ struct sRoot : s0 {
 		safecall(sQ, sQ1, met1, 1, vp1);
 
 		char* configFile="c:/temp/client.xml";
-		safespawn(xmlConfigFull, sConfigProps, newsname("full XML configuration"), newdbg(), configFile);
+		safespawn(xmlForecasterRoot, sConfigItem, newsname("Forecaster XML root Key"), newdbg(), configFile);
+		//safespawn(xmlConfigFull, sConfigProps, newsname("full XML configuration"), newdbg(), configFile);
+
 
 	}
 
