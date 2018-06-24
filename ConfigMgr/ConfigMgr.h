@@ -38,60 +38,9 @@ struct sConfigItem : s0 {
 	EXPORT sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_=0, char* CLoverride_[]=nullptr);
 	
 	EXPORT void parse();
-
-};
-struct sConfigProps : s0 {
-
-	FILE* parmsFile=nullptr;
-	int CLoverridesCnt;
-	char** CLoverride;
-
-	int itemsCnt;
-	sConfigItem* item[XMLITEMS_MAXCNT];
-
-	int parmsCnt;
-	char parmName[XMLPARM_MAXCNT][XMLPARM_NAME_MAXLEN];
-	int parmValsCnt[XMLPARM_MAXCNT];
-	char*** parmVal;
-	int foundParmId;
-
-	char currentKey[XMLKEY_NAME_MAXLEN];
-	char soughtParmFull[XMLPARM_FULLNAME_MAXLEN];
-	
-	EXPORT sConfigProps(s0parmsdef, char* pFileFullName, int CLoverridesCnt_=0, char* CLoverride_[]=nullptr);
-	EXPORT ~sConfigProps();
-
-	EXPORT void parse();
 	EXPORT void decode(int elementId, int* oVal);
 
 	template <typename T> EXPORT void get(T* oVar, const char* soughtParmDesc_, int* oListLen=nullptr) {
-
-		buildSoughtParmFull(soughtParmDesc_);
-
-		//-- lookup parm name&val
-		foundParmId=findParmId();
-		if (foundParmId<0) fail("could not find parm %s. currentKey=%s", soughtParmDesc_, currentKey);
-
-		//-- set oListLen (if passed)
-		if (oListLen!=nullptr) (*oListLen)=parmValsCnt[foundParmId];
-		//-- call type-specific getx(), which in turn uses Fully-qualified parameter name
-		getx(oVar);
-
 	}
 
-	//-- type-specific: int(with or without enums), numtype, char*
-	EXPORT void getx(int* oVar);
-	EXPORT void getx(bool* oVar);
-	EXPORT void getx(char* oVar);
-	EXPORT void getx(numtype* oVar);
-	//-- type-specific, arrays: int(with or without enums), numtype, char*
-	EXPORT void getx(int** oVar);
-	EXPORT void getx(bool** oVar);
-	EXPORT void getx(char** oVar);
-	EXPORT void getx(numtype** oVar);
-
-private:
-	void buildSoughtParmFull(const char* soughtParmDesc_);
-
-
-}; 
+};

@@ -27,7 +27,6 @@ struct sRoot : s0 {
 	sQ* sQ2;
 	sQ* sQ3;
 
-	sConfigProps*	xmlConfigFull;	//-- Whole Config File
 	sConfigItem* xmlForecasterRoot;
 
 	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {}
