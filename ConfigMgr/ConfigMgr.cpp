@@ -21,6 +21,17 @@ sConfigItem::sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_, c
 	safecall(sConfigItem, this, parse);
 
 }
+
+bool skipLine(char* line) {
+	if (strlen(line)==0) return true;
+	if (line[0]=='#') return true;
+	return false;
+}
+void cleanLine(char* line){
+	stripChar(line, ' ');
+	stripChar(line, '\t');
+	stripChar(line, '\n');
+}
 void sConfigItem::parse() {
 
 	size_t llen;
@@ -30,13 +41,9 @@ void sConfigItem::parse() {
 	char readParmVal[XMLPARM_VAL_MAXCNT*XMLPARM_VAL_MAXLEN];
 
 	while (fgets(vLine, XMLLINE_MAXLEN, parmsFile)!=NULL) {
-		//-- strip spaces & tabs
-		stripChar(vLine, ' ');
-		stripChar(vLine, '\t');
-		stripChar(vLine, '\n');
+		cleanLine(vLine);	//-- strip spaces & tabs
+		if (skipLine(vLine)) continue;			// empty line or comment
 		llen=strlen(vLine);
-		if (llen==0) continue;			// empty line
-		if (vLine[0]=='#') continue;	// comment
 
 		if (vLine[0]=='<' && vLine[1]!='/' && vLine[llen-1]=='>') {
 			//-- key start
@@ -52,7 +59,7 @@ void sConfigItem::parse() {
 			//-- parameter
 			if (!getValuePair(vLine, readParmDesc, readParmVal, '=')) fail("wrong parameter format: %s", readParmVal);
 			UpperCase(readParmDesc);
-			safespawn(item[childrenCnt], sConfigItem, newsname("%s.%s", name, readParmDesc), dbg, XMLPARM, readParmDesc, readParmVal);
+			safespawn(item[childrenCnt], sConfigItem, newsname("%s.%s", name, readParmDesc), dbg, XMLPARM, readParmDesc, readParmVal);			
 		}
 
 	}
