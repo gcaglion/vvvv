@@ -20,11 +20,12 @@
 #define XMLKEY 0
 #define XMLPARM 1
 //--
-#define XML_MAX_RECURSION	4
+#define XML_MAX_RECURSION	3
 
 struct sConfigItem : s0 {
 
 	FILE* parmsFile;
+	fpos_t pos;
 	int CLoverridesCnt;
 	char** CLoverride;
 
@@ -37,8 +38,11 @@ struct sConfigItem : s0 {
 	EXPORT sConfigItem(s0parmsdef, int type_, char* desc_, char* val_=nullptr);
 	EXPORT sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_=0, char* CLoverride_[]=nullptr);
 	
-	EXPORT void parse();
+	EXPORT void parse(fpos_t* startKeyPos_);
 	EXPORT void decode(int elementId, int* oVal);
+
+	int postItemsCnt;
+	fpos_t postItemPos[OBJ_MAX_CHILDREN];
 
 	template <typename T> EXPORT void get(T* oVar, const char* soughtParmDesc_, int* oListLen=nullptr) {
 	}
