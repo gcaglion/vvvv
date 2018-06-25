@@ -30,7 +30,7 @@ struct sRoot : s0 {
 	void run() {
 
 		char* configFile="c:/temp/client.xml";
-		safespawn(xmlForecasterRoot, sConfigItem, newsname("Forecaster XML root Key"), newdbg(), configFile);
+		safespawn(xmlForecasterRoot, sConfigItem, newsname("Forecaster XML root Key"), newdbg(), "c:/temp/client.xml");
 		//safespawn(xmlConfigFull, sConfigProps, newsname("full XML configuration"), newdbg(), configFile);
 
 

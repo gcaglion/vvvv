@@ -4,7 +4,7 @@
 #include "svard.h"
 #include <typeinfo>
 
-#define OBJ_NAME_MAXLEN 128
+#define OBJ_NAME_MAXLEN 1024
 #define OBJ_MAX_CHILDREN 64
 //--
 #define OBJ_PARMS_MAXCNT		32

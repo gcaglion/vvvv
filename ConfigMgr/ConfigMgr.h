@@ -9,7 +9,7 @@
 //--
 #define XMLITEMS_MAXCNT	1024
 //--
-#define XMLKEY_NAME_MAXLEN	1024
+#define XMLKEY_SHORTNAME_MAXLEN	64
 //--
 #define XMLPARM_MAXCNT		1000
 #define XMLPARM_NAME_MAXLEN	64
@@ -21,25 +21,36 @@
 #define XMLPARM 1
 //--
 
-struct sConfigItem : s0 {
+struct sConfigFile : s0 {
+
+};
+
+struct sConfig :s0 {
 
 	FILE* parmsFile;
 	int CLoverridesCnt;
 	char** CLoverride;
 
-	sConfigItem* item[OBJ_MAX_CHILDREN];
-	//--
-	int type;
-	//--
-	//-- KeyDesc, ParmDesc are stored in s0::name
-	//--
-	EXPORT sConfigItem(s0parmsdef, int type_, char* desc_, char* val_=nullptr);
-	EXPORT sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_=0, char* CLoverride_[]=nullptr);
-	
-	EXPORT void parse();
-	EXPORT void decode(int elementId, int* oVal);
+	EXPORT sConfig(s0parmsdef, const char* pFileFullName, int CLoverridesCnt_=0, char* CLoverride_[]=nullptr);
+	EXPORT ~sConfig();
+};
 
-	template <typename T> EXPORT void get(T* oVar, const char* soughtParmDesc_, int* oListLen=nullptr) {
-	}
+struct sConfigParm : s0 {
+	char shortName[XMLKEY_SHORTNAME_MAXLEN];
+	char valS[XMLPARM_VAL_MAXCNT*XMLPARM_VAL_MAXLEN];
 
+	EXPORT sConfigParm(s0parmsdef, const char* shortName_, const char* valS_);
+};
+
+struct sConfigKey : s0 {
+	char shortName[XMLKEY_SHORTNAME_MAXLEN];
+	char startLabel[XMLKEY_SHORTNAME_MAXLEN];
+	char endLabel[XMLKEY_SHORTNAME_MAXLEN];
+	char vLine[XMLLINE_MAXLEN];
+
+	fpos_t startPos, endPos;
+
+	EXPORT sConfigKey(s0parmsdef, const char* shortName_);
+
+	bool sConfigKey::gotoEnd();
 };
