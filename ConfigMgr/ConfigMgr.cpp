@@ -5,7 +5,7 @@ sConfigItem::sConfigItem(s0parmsdef, int type_, char* desc_, char* val_) : s0(s0
 	parmsFile=((sConfigItem*)parent)->parmsFile;
 
 	//-- parse
-	if(type==XMLKEY) safecall(sConfigItem, this, parse, (fpos_t*)nullptr);
+	if(type==XMLKEY) safecall(sConfigItem, this, parse);
 
 }
 sConfigItem::sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_, char* CLoverride_[]) : s0(s0parmsval) {
@@ -16,14 +16,8 @@ sConfigItem::sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_, c
 	//-- open file
 	fopen_s(&parmsFile, pFileFullName, "r");
 	if (errno!=0) fail("Could not open configuration file %s . Error %d", pFileFullName, errno);
-	fgetpos(parmsFile, &pos);
 	//-- parse
-	safecall(sConfigItem, this, parse, &pos);
-
-	//-- post items
-	for (int pi=0; pi<postItemsCnt; pi++) {
-		safecall(sConfigItem, this, parse, &postItemPos[pi]);
-	}
+	safecall(sConfigItem, this, parse);
 
 }
 
@@ -37,18 +31,14 @@ void cleanLine(char* line){
 	stripChar(line, '\t');
 	stripChar(line, '\n');
 }
-void sConfigItem::parse(fpos_t* startKeyPos_) {
+void sConfigItem::parse() {
 
 	size_t llen;
 	char vLine[XMLLINE_MAXLEN];
 	char readKeyDesc[XMLKEY_NAME_MAXLEN];
 	char readParmDesc[XMLPARM_NAME_MAXLEN];
 	char readParmVal[XMLPARM_VAL_MAXCNT*XMLPARM_VAL_MAXLEN];
-	char endTag[XMLKEY_NAME_MAXLEN];
 
-	if(startKeyPos_!=nullptr) fsetpos(parmsFile, startKeyPos_);
-
-	postItemsCnt=0;
 	while (fgets(vLine, XMLLINE_MAXLEN, parmsFile)!=NULL) {
 		cleanLine(vLine);	//-- strip spaces & tabs
 		if (skipLine(vLine)) continue;			// empty line or comment
@@ -58,25 +48,7 @@ void sConfigItem::parse(fpos_t* startKeyPos_) {
 			//-- key start
 			memcpy_s(readKeyDesc, XMLKEY_NAME_MAXLEN, &vLine[1], llen-2); readKeyDesc[llen-2]='\0';
 			UpperCase(readKeyDesc);
-			//-- save key start position 
-			fgetpos(parmsFile, &pos);
-			if (stackLevel>XML_MAX_RECURSION) {
-				//-- save position for key to be re-processed
-				fgetpos(parmsFile, &postItemPos[postItemsCnt]);
-				//-- go to the end of current key
-				sprintf_s(endTag, XMLKEY_NAME_MAXLEN, "</%s>", readKeyDesc);
-				while (fgets(vLine, XMLLINE_MAXLEN, parmsFile)!=NULL){
-					cleanLine(vLine);	//-- strip spaces & tabs
-					llen=strlen(vLine);
-					UpperCase(vLine);
-					if (strcmp(vLine, endTag)==0) {
-						break;
-					}
-				}
-				postItemsCnt++;
-			} else {
-				safespawn(item[childrenCnt], sConfigItem, newsname("%s.%s", name, readKeyDesc), dbg, XMLKEY, name);
-			}
+			safespawn(item[childrenCnt], sConfigItem, newsname("%s.%s", name, readKeyDesc), dbg, XMLKEY, name);
 		} else 	if (vLine[0]=='<' && vLine[1]=='/' && vLine[llen-1]=='>') {
 			//-- key end
 			memcpy_s(readKeyDesc, XMLKEY_NAME_MAXLEN, &vLine[2], llen-3); readKeyDesc[llen-3]='\0';
