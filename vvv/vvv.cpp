@@ -23,25 +23,11 @@ struct sQ : s0 {
 
 struct sRoot : s0 {
 
-	sQ* sQ1;
-	sQ* sQ2;
-	sQ* sQ3;
-
 	sConfigItem* xmlForecasterRoot;
 
 	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {}
 
 	void run() {
-
-		char* vp1="11111GGGG";
-		char* vp2="22222GGGG";
-		char* vp3="33333GGFF";
-
-		safespawn(sQ1, sQ, newsname("sQ%dname", 1), newdbg(), 1, vp1);
-		//safespawn(sQ2, sQ, newsname("sQ%dname", 2), newdbg(), 2, vp2);
-		safespawn(sQ3, sQ, newsname("sQ%dname", 3), newdbg(), 3, vp3);
-
-		safecall(sQ, sQ1, met1, 1, vp1);
 
 		char* configFile="c:/temp/client.xml";
 		safespawn(xmlForecasterRoot, sConfigItem, newsname("Forecaster XML root Key"), newdbg(), configFile);
