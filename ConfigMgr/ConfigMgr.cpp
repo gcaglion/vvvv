@@ -43,6 +43,9 @@ sCfgKey::sCfgKey(char* path_, char* keyLine_, fpos_t pos_, sCfgKey* parentKey_) 
 	parentKey=parentKey_;
 	parmsCnt=0;
 }
+sCfgKey::~sCfgKey(){
+	for (int p=0; p<parmsCnt; p++) delete parm[p];
+}
 
 sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 
@@ -80,4 +83,7 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 
 	}
 
+}
+sCfg::~sCfg() {
+	for (int k=0; k<keysCnt; k++) delete key[k];
 }

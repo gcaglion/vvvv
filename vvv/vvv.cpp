@@ -31,7 +31,6 @@ struct sRoot : s0 {
 
 		safespawn(xmlForecasterCfg, sCfg, newsname("Forecaster XML main config"), newdbg(), "c:/temp/client.xml");
 
-
 	}
 
 	~sRoot(){}
