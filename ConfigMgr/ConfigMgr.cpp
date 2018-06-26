@@ -20,7 +20,86 @@ bool isParm(char* line) {
 	return (!isKeyStart(line) && !isKeyEnd(line));
 }
 
+sConfigFile::sConfigFile(s0parmsdef, const char* pFileFullName) : s0(s0parmsval) {
+	int llen;
 
+	//-- open file
+	fopen_s(&parmsFile, pFileFullName, "r");
+	if (errno!=0) fail("Could not open configuration file %s . Error %d", pFileFullName, errno);
+
+	//-- load flat Keys and Parms strings
+	keysCnt=0;
+	char currentPath[XMLKEY_PATH_MAXLEN]=".";
+	int currentKey=0;
+
+	while (fgets(line, XMLFILE_LINE_MAXLEN, parmsFile)!=NULL) {
+		cleanLine(line);				//-- strip spaces & tabs
+		if (skipLine(line)) continue;	// empty line or comment
+		llen=(int)strlen(line);
+
+		//-- set current XML path
+
+		if (line[0]=='<' && line[1]!='/' && line[llen-1]=='>') {
+			//-- key start
+			
+			//-- set KeyPath = currentPath
+			strcpy_s(keyPath[keysCnt], XMLKEY_PATH_MAXLEN, currentPath);
+			//-- set KeyName
+			memcpy_s(keyName[keysCnt], XMLKEY_NAME_MAXLEN, &line[1], llen-2); keyName[keysCnt][llen-2]='\0';
+			//-- set Key parent
+			keyParentId[keysCnt]=keysCnt;
+			//-- save key start position 
+			fgetpos(parmsFile, &keyPos[keysCnt]);
+			//-- update current path 
+			strcat_s(currentPath, XMLKEY_PATH_MAXLEN, keyName[keysCnt]); strcat_s(currentPath, XMLKEY_PATH_MAXLEN, ".");
+
+			//-- reset keyParmsCnt
+			keyParmsCnt[keysCnt]=0;
+			//-- update current Key 
+			currentKey=keysCnt;
+
+			//-- update keysCnt
+			keysCnt++;
+
+		} else 	if (line[0]=='<' && line[1]=='/' && line[llen-1]=='>') {
+			//-- key end
+
+			//-- set currentPath one level up
+			currentPath[instr('.', currentPath, true)]='\0';
+			currentPath[instr('.', currentPath, true)+1]='\0';
+			//-- current key becomes current key's parent
+			currentKey=keyParentId[keysCnt-1];
+
+		} else {
+			//-- parameter
+
+			if (!getValuePair(line, keyParmName[keysCnt-1][keyParmsCnt[keysCnt-1]], keyParmValS[keysCnt-1][keyParmsCnt[keysCnt-1]], '=')) fail("wrong parameter format: %s", keyParmValS[keysCnt-1][keyParmsCnt[keysCnt-1]]);
+			UpperCase(keyParmValS[keysCnt-1][keyParmsCnt[keysCnt-1]]);
+			//--
+			//safespawn(item[childrenCnt], sConfigItem, newsname("%s.%s", name, readParmDesc), dbg, XMLPARM, keyParmName[keysCnt][keyParmsCnt[keysCnt]], keyParmValS[keysCnt][keyParmsCnt[keysCnt]]);
+		}
+
+	}
+
+
+}
+
+sConfig::sConfig(s0parmsdef, const char* pFileFullName, int CLoverridesCnt_, char* CLoverride_[]) : s0(s0parmsval) {
+
+	//-- open parameters file, and load all keys and parms
+	safespawn(srcFile, sConfigFile, newsname("%s_cfgFile", name), dbg, pFileFullName);
+
+	//-- handle command-line overrides ...
+	CLoverridesCnt=CLoverridesCnt_; CLoverride=CLoverride_;
+
+	//-- create Keys and Parms
+	for (int k=0; k<srcFile->keysCnt; k++) {
+
+	}
+
+}
+sConfig::~sConfig() {}
+/*
 sConfigParm::sConfigParm(s0parmsdef, const char* shortName_, const char* valS_) : s0(s0parmsval) {
 	strcpy_s(shortName, XMLKEY_SHORTNAME_MAXLEN, shortName_);
 	strcpy_s(valS, XMLPARM_VAL_MAXCNT*XMLPARM_VAL_MAXLEN, valS_);
@@ -49,7 +128,7 @@ sConfigKey::sConfigKey(s0parmsdef, const char* shortName_) : s0(s0parmsval) {
 
 }
 
-
+*/
 
 /*sConfigItem::sConfigItem(s0parmsdef, int type_, const char* shortName_, const char* parmValS_) : s0(s0parmsval) {
 	type=type_;
@@ -83,33 +162,6 @@ sConfigKey::sConfigKey(s0parmsdef, const char* shortName_) : s0(s0parmsval) {
 
 }
 */
-sConfig::sConfig(s0parmsdef, const char* pFileFullName, int CLoverridesCnt_, char* CLoverride_[]) : s0(s0parmsval) {
-
-	CLoverridesCnt=CLoverridesCnt_; CLoverride=CLoverride_;
-	//-- handle command-line overrides ...
-
-	//-- open file
-	fopen_s(&parmsFile, pFileFullName, "r");
-	if (errno!=0) fail("Could not open configuration file %s . Error %d", pFileFullName, errno);
-	
-	//-- read level 1 keys
-	while (fgets(vLine, XMLLINE_MAXLEN, parmsFile)!=NULL) {
-		cleanLine(vLine);				//-- strip spaces & tabs
-		if (skipLine(vLine)) continue;	//-- empty line or comment
-
-		if (isKeyStart(vLine)) {
-			//-- create key. additionally, this goes to the end of the key
-			memcpy_s(readKeyDesc, XMLKEY_SHORTNAME_MAXLEN, &vLine[1], llen-2); readKeyDesc[llen-2]='\0';
-			safespawn(item[childrenCnt], sConfigKey, newsname("%s.%s", "", readKeyDesc), dbg, XMLKEY, readKeyDesc, "");	// "" this is the first level key
-		}
-	}
-
-	//-- parse from start (0)
-	//safecall(sConfigItem, this, parse, 0);
-
-}
-sConfig::~sConfig(){}
-
 /*void sConfigItem::parse(fpos_t startPos_) {
 
 	rewind(parmsFile);
