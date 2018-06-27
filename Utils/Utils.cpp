@@ -89,7 +89,7 @@ EXPORT char* right(char* str, int len) {
 EXPORT char* left(char* str, int len) {
 	return(substr(str, 0, len));
 }
-EXPORT int  instr(char soughtChar, char* intoStr, Bool fromRight) {
+EXPORT int  instr(char soughtChar, const char* intoStr, Bool fromRight) {
 	int i;
 	if (fromRight) {
 		for (i=(int)strlen(intoStr)-1; i>=0; i--) {

@@ -28,6 +28,7 @@ sCfgParm::sCfgParm(char* name_, char* valS_, fpos_t pos_) {
 sCfgKey::sCfgKey() {
 	pos=0;
 	path[0]='\0';
+	depth=0;
 	name[0]='\0';
 	fname[0]='\0';
 	parentKey=nullptr;
@@ -39,6 +40,9 @@ sCfgKey::sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) {
 	parentKey=parentKey_;
 	if (parentKey==nullptr) {
 		path[0]='\0'; 
+		depth=0;
+	} else {
+		depth=parentKey->depth+1;
 	}
 	memcpy_s(name, XMLKEY_NAME_MAXLEN, &keyLine_[1], strlen(keyLine_)-2); name[strlen(keyLine_)-2]='\0';
 	UpperCase(name, name);
@@ -80,6 +84,7 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 		} else {
 			//-- new sParm
 			if (!getValuePair(line, pname, pval, '=')) fail("wrong parameter format: %s", line);
+			UpperCase(pval, pval);
 			currentKey->parm[currentKey->parmsCnt]= new sCfgParm(pname, pval, currentPos);
 			currentKey->parmsCnt++;
 		}
@@ -92,13 +97,16 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 sCfg::~sCfg() {
 	for (int k=0; k<keysCnt; k++) delete key[k];
 }
-void sCfg::setKey(const char* dest_) {
+sCfgKey* sCfg::setKey(const char* dest_) {
 	if (!findKey(dest_)) fail("Key %s not found.", dest_);
+	return currentKey;
 }
 bool sCfg::findKey(const char* dest_) {
 	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
 	char fname[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
 	bool found=false;
+
+	if (strcmp(dest_, currentKey->fname)==0) return true;
 
 	UpperCase(dest_, dest);
 	//-- first, establish key full name based on modifiers ('/','.', ... )
@@ -132,14 +140,3 @@ bool sCfg::findKey(const char* dest_) {
 	}
 	return found;
 }
-
-//-- simple
-void sCfgParm::get(int* oval_) {}
-void sCfgParm::get(char* oval_) {}
-void sCfgParm::get(bool* oval_) {}
-void sCfgParm::get(numtype* oval_) {}
-//-- array
-void sCfgParm::get(int** oval_) {}
-void sCfgParm::get(char** oval_) {}
-void sCfgParm::get(bool** oval_) {}
-void sCfgParm::get(numtype** oval_) {}

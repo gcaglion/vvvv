@@ -25,6 +25,9 @@ struct sRoot : s0 {
 		safecall(sCfg, xmlForecasterCfg, setKey, "Forecaster/Debugger");
 		//-- ../<key>
 		safecall(sCfg, xmlForecasterCfg, setKey, "../Engine");
+
+		int maxEpochs=xmlForecasterCfg->get<int>("Custom/Core0/Training/MaxEpochs");
+
 	}
 
 	~sRoot(){}
