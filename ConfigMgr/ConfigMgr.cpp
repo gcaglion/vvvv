@@ -93,8 +93,12 @@ sCfg::~sCfg() {
 	for (int k=0; k<keysCnt; k++) delete key[k];
 }
 void sCfg::setKey(const char* dest_) {
+	if (!findKey(dest_)) fail("Key %s not found.", dest_);
+}
+bool sCfg::findKey(const char* dest_) {
 	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
 	char fname[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
+	bool found=false;
 
 	UpperCase(dest_, dest);
 	//-- first, establish key full name based on modifiers ('/','.', ... )
@@ -103,27 +107,39 @@ void sCfg::setKey(const char* dest_) {
 		if (strlen(dest)>2) {
 			sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, &dest[3]);
 		} else {
-			return;
+			found=true;
 		}
 	} else if (dest[0]=='/') {
 		if (strlen(dest)>1) {
 			strcpy_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, dest);
 		} else {
 			currentKey=key[0]->parentKey;
-			return;
+			found=true;
 		}
 	} else {
 		sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, dest);
 	}
 
 	//-- then, find key using full name
-	bool found=false;
-	for (int k=0; k<keysCnt; k++) {
-		if (strcmp(fname, key[k]->fname)==0) {
-			currentKey = key[k];
-			found=true;
-			break;
+	if (!found) {
+		for (int k=0; k<keysCnt; k++) {
+			if (strcmp(fname, key[k]->fname)==0) {
+				currentKey = key[k];
+				found=true;
+				break;
+			}
 		}
 	}
-	if (!found) fail("Key %s not found.", dest);
+	return found;
 }
+
+//-- simple
+void sCfgParm::get(int* oval_) {}
+void sCfgParm::get(char* oval_) {}
+void sCfgParm::get(bool* oval_) {}
+void sCfgParm::get(numtype* oval_) {}
+//-- array
+void sCfgParm::get(int** oval_) {}
+void sCfgParm::get(char** oval_) {}
+void sCfgParm::get(bool** oval_) {}
+void sCfgParm::get(numtype** oval_) {}

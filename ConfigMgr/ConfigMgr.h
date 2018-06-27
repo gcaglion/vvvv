@@ -20,6 +20,16 @@ struct sCfgParm {
 
 	sCfgParm(char* name_, char* valS_, fpos_t pos_);
 
+	EXPORT void get(int* oval_);
+	EXPORT void get(char* oval_);
+	EXPORT void get(bool* oval_);
+	EXPORT void get(numtype* oval_);
+	//-- array
+	EXPORT void get(int** oval_);
+	EXPORT void get(char** oval_);
+	EXPORT void get(bool** oval_);
+	EXPORT void get(numtype** oval_);
+
 };
 struct sCfgKey {
 	//-- id props
@@ -49,6 +59,8 @@ struct sCfg : s0 {
 	EXPORT ~sCfg();
 
 	EXPORT void setKey(const char* dest);
+	EXPORT bool findKey(const char* dest);
+	EXPORT void get(const char* pdesc);
 
 private:
 	char line[XMLFILE_LINE_MAXLEN];
