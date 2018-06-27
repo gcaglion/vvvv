@@ -34,12 +34,9 @@ struct sCfgKey {
 	sCfgParm* parm[XMLKEY_PARM_MAXCNT];
 
 	sCfgKey();
-	sCfgKey(char* path_, char* keyLine_, fpos_t pos_, sCfgKey* parentKey_);
+	sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_);
 	~sCfgKey();
 
-	//-- navigation
-	void set(const char* dest);
-	bool find(const char* dest);
 };
 
 struct sCfg : s0 {
@@ -51,9 +48,7 @@ struct sCfg : s0 {
 	EXPORT sCfg(s0parmsdef, const char* cfgFileFullName);
 	EXPORT ~sCfg();
 
-	void setKey(char* dest) {
-		int l=strlen(dest);
-	}
+	EXPORT void setKey(const char* dest);
 
 private:
 	char line[XMLFILE_LINE_MAXLEN];

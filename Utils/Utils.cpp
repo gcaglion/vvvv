@@ -29,12 +29,13 @@ EXPORT Bool getCurrentPath(char* oPath) {
 	strcpy_s(oPath, MAX_PATH, RetBuf);
 	return true;
 }
-EXPORT void UpperCase(char* str) {
+EXPORT void UpperCase(const char* istr, char* ostr) {
 	int pos=0;
-	while (str[pos]!='\0') {
-		str[pos]=toupper(str[pos]);
+	while (istr[pos]!='\0') {
+		ostr[pos]=toupper(istr[pos]);
 		pos++;
 	}
+	ostr[pos]='\0';
 }
 EXPORT int cslToArray(const char* csl, char Separator, char** StrList) {
 	//-- 1. Put a <separator>-separated list of string values into an array of strings, and returns list length

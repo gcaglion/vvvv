@@ -20,9 +20,10 @@ bool isKeyEnd(char* line) {
 
 sCfgParm::sCfgParm(char* name_, char* valS_, fpos_t pos_) {
 	pos=pos_;
-	strcpy_s(name, XMLKEY_PARM_NAME_MAXLEN, name_);
-	strcpy_s(valS, XMLKEY_PARM_VALS_MAXLEN, valS_);
-	UpperCase(valS);
+	//strcpy_s(name, XMLKEY_PARM_NAME_MAXLEN, name_); 
+	//strcpy_s(valS, XMLKEY_PARM_VALS_MAXLEN, valS_); UpperCase(valS);	
+	UpperCase(name_, name);
+	UpperCase(valS_, valS);
 }
 sCfgKey::sCfgKey() {
 	pos=0;
@@ -33,16 +34,16 @@ sCfgKey::sCfgKey() {
 	parmsCnt=0;
 
 }
-sCfgKey::sCfgKey(char* path_, char* keyLine_, fpos_t pos_, sCfgKey* parentKey_) {
+sCfgKey::sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) {
 	pos=pos_;
-	if (strlen(path_)==0) {
+	parentKey=parentKey_;
+	if (parentKey==nullptr) {
 		path[0]='\0'; 
-	} else {
-		strcpy_s(path, XMLKEY_PATH_MAXLEN, path_);
 	}
 	memcpy_s(name, XMLKEY_NAME_MAXLEN, &keyLine_[1], strlen(keyLine_)-2); name[strlen(keyLine_)-2]='\0';
-	sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s.%s", path, name);
-	parentKey=parentKey_;
+	UpperCase(name, name);
+	strcpy_s(path, XMLKEY_PATH_MAXLEN, parentKey->fname);
+	sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", path, name);
 	parmsCnt=0;
 }
 sCfgKey::~sCfgKey(){
@@ -68,7 +69,7 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 		fgetpos(cfgFile, &currentPos);
 		if (isKeyStart(line)) {
 			//-- new sKey
-			key[keysCnt] = new sCfgKey(currentKey->fname, line, currentPos, ((keysCnt>0) ? key[keysCnt-1] : (sCfgKey*)nullptr));
+			key[keysCnt] = new sCfgKey(currentKey, line, currentPos);
 			//-- update current Key 
 			currentKey=key[keysCnt];
 			//-- update keysCnt
@@ -91,4 +92,38 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 sCfg::~sCfg() {
 	for (int k=0; k<keysCnt; k++) delete key[k];
 }
+void sCfg::setKey(const char* dest_) {
+	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
+	char fname[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
 
+	UpperCase(dest_, dest);
+	//-- first, establish key full name based on modifiers ('/','.', ... )
+	if (dest[0]=='.' && dest[1]=='.') {
+		currentKey=currentKey->parentKey;
+		if (strlen(dest)>2) {
+			sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, &dest[3]);
+		} else {
+			return;
+		}
+	} else if (dest[0]=='/') {
+		if (strlen(dest)>1) {
+			strcpy_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, dest);
+		} else {
+			currentKey=key[0]->parentKey;
+			return;
+		}
+	} else {
+		sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, dest);
+	}
+
+	//-- then, find key using full name
+	bool found=false;
+	for (int k=0; k<keysCnt; k++) {
+		if (strcmp(fname, key[k]->fname)==0) {
+			currentKey = key[k];
+			found=true;
+			break;
+		}
+	}
+	if (!found) fail("Key %s not found.", dest);
+}

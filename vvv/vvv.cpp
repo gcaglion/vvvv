@@ -3,24 +3,6 @@
 #include "../s0/s0.h"
 #include "../ConfigMgr/ConfigMgr.h"
 
-struct sQ : s0 {
-	int p1; char* p2;
-
-	sQ(s0parmsdef, int p1_, char* p2_) : s0(s0parmsval) {
-		p1=p1_; p2=p2_;
-		if (p1==2) fail("forced failure; p1=%d", p1);
-	}
-
-	void met1(int mp1, char* mp2) {
-		printf("MMMMMMMMMMM\n");
-	}
-	void met2(int mp1, char* mp2) {
-		printf("NNNNNNNNNNN\n");
-	}
-
-	~sQ() {}
-};
-
 struct sRoot : s0 {
 
 	sCfg* xmlForecasterCfg;
@@ -31,6 +13,18 @@ struct sRoot : s0 {
 
 		safespawn(xmlForecasterCfg, sCfg, newsname("Forecaster XML main config"), newdbg(), "c:/temp/client.xml");
 
+		//-- absolute key
+		safecall(sCfg, xmlForecasterCfg, setKey, "/Forecaster/Data/Train/Dataset");
+		//-- sub key
+		safecall(sCfg, xmlForecasterCfg, setKey, "TimeSerie/DataSource/FileData");
+		//-- ..
+		safecall(sCfg, xmlForecasterCfg, setKey, "..");
+		//-- /
+		safecall(sCfg, xmlForecasterCfg, setKey, "/");
+		//-- sub key
+		safecall(sCfg, xmlForecasterCfg, setKey, "Forecaster/Debugger");
+		//-- ../<key>
+		safecall(sCfg, xmlForecasterCfg, setKey, "../Engine");
 	}
 
 	~sRoot(){}
