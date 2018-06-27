@@ -56,7 +56,7 @@ struct sCfgKey {
 
 	sCfgKey();
 	sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_);
-	~sCfgKey();
+	EXPORT ~sCfgKey();
 
 };
 

@@ -38,6 +38,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OraUtils", "OraUtils\OraUti
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DBConnection", "DBConnection\DBConnection.vcxproj", "{6D8A3FE3-46F1-47F8-B201-5E733732D091}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s1", "s1\s1.vcxproj", "{E82FFC29-49A1-4819-87B0-D12F0761A259}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F74613D8-F080-4B06-9D51-3963DE071E4C} = {F74613D8-F080-4B06-9D51-3963DE071E4C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -102,6 +107,14 @@ Global
 		{6D8A3FE3-46F1-47F8-B201-5E733732D091}.Release|x64.Build.0 = Release|x64
 		{6D8A3FE3-46F1-47F8-B201-5E733732D091}.Release|x86.ActiveCfg = Release|Win32
 		{6D8A3FE3-46F1-47F8-B201-5E733732D091}.Release|x86.Build.0 = Release|Win32
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Debug|x64.ActiveCfg = Debug|x64
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Debug|x64.Build.0 = Debug|x64
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Debug|x86.ActiveCfg = Debug|Win32
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Debug|x86.Build.0 = Debug|Win32
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Release|x64.ActiveCfg = Release|x64
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Release|x64.Build.0 = Release|x64
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Release|x86.ActiveCfg = Release|Win32
+		{E82FFC29-49A1-4819-87B0-D12F0761A259}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
