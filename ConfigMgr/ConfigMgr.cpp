@@ -1,66 +1,94 @@
 #include "ConfigMgr.h"
 
-sConfigItem::sConfigItem(s0parmsdef, int type_, char* desc_, char* val_) : s0(s0parmsval) {
-	type=type_;
-	parmsFile=((sConfigItem*)parent)->parmsFile;
-
-	//-- parse
-	if(type==XMLKEY) safecall(sConfigItem, this, parse);
-
-}
-sConfigItem::sConfigItem(s0parmsdef, char* pFileFullName, int CLoverridesCnt_, char* CLoverride_[]) : s0(s0parmsval) {
-
-	CLoverridesCnt=CLoverridesCnt_; CLoverride=CLoverride_;
-	//-- handle command-line overrides ...
-
-	//-- open file
-	fopen_s(&parmsFile, pFileFullName, "r");
-	if (errno!=0) fail("Could not open configuration file %s . Error %d", pFileFullName, errno);
-	//-- parse
-	safecall(sConfigItem, this, parse);
-
-}
-
 bool skipLine(char* line) {
 	if (strlen(line)==0) return true;
 	if (line[0]=='#') return true;
 	return false;
 }
-void cleanLine(char* line){
+void cleanLine(char* line) {
 	stripChar(line, ' ');
 	stripChar(line, '\t');
 	stripChar(line, '\n');
 }
-void sConfigItem::parse() {
 
-	size_t llen;
-	char vLine[XMLLINE_MAXLEN];
-	char readKeyDesc[XMLKEY_NAME_MAXLEN];
-	char readParmDesc[XMLPARM_NAME_MAXLEN];
-	char readParmVal[XMLPARM_VAL_MAXCNT*XMLPARM_VAL_MAXLEN];
+bool isKeyStart(char* line) {
+	return (line[0]=='<' && line[1]!='/' && line[strlen(line)-1]=='>');
+}
+bool isKeyEnd(char* line) {
+	return (line[0]=='<' && line[1]=='/' && line[strlen(line)-1]=='>');
+}
 
-	while (fgets(vLine, XMLLINE_MAXLEN, parmsFile)!=NULL) {
-		cleanLine(vLine);	//-- strip spaces & tabs
-		if (skipLine(vLine)) continue;			// empty line or comment
-		llen=strlen(vLine);
+sCfgParm::sCfgParm(char* name_, char* valS_, fpos_t pos_) {
+	pos=pos_;
+	strcpy_s(name, XMLKEY_PARM_NAME_MAXLEN, name_);
+	strcpy_s(valS, XMLKEY_PARM_VALS_MAXLEN, valS_);
+	UpperCase(valS);
+}
+sCfgKey::sCfgKey() {
+	pos=0;
+	path[0]='\0';
+	name[0]='\0';
+	fname[0]='\0';
+	parentKey=nullptr;
+	parmsCnt=0;
 
-		if (vLine[0]=='<' && vLine[1]!='/' && vLine[llen-1]=='>') {
-			//-- key start
-			memcpy_s(readKeyDesc, XMLKEY_NAME_MAXLEN, &vLine[1], llen-2); readKeyDesc[llen-2]='\0';
-			UpperCase(readKeyDesc);
-			safespawn(item[childrenCnt], sConfigItem, newsname("%s.%s", name, readKeyDesc), dbg, XMLKEY, name);
-		} else 	if (vLine[0]=='<' && vLine[1]=='/' && vLine[llen-1]=='>') {
-			//-- key end
-			memcpy_s(readKeyDesc, XMLKEY_NAME_MAXLEN, &vLine[2], llen-3); readKeyDesc[llen-3]='\0';
-			UpperCase(readKeyDesc);
-			return;
+}
+sCfgKey::sCfgKey(char* path_, char* keyLine_, fpos_t pos_, sCfgKey* parentKey_) {
+	pos=pos_;
+	if (strlen(path_)==0) {
+		path[0]='\0'; 
+	} else {
+		strcpy_s(path, XMLKEY_PATH_MAXLEN, path_);
+	}
+	memcpy_s(name, XMLKEY_NAME_MAXLEN, &keyLine_[1], strlen(keyLine_)-2); name[strlen(keyLine_)-2]='\0';
+	sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s.%s", path, name);
+	parentKey=parentKey_;
+	parmsCnt=0;
+}
+sCfgKey::~sCfgKey(){
+	for (int p=0; p<parmsCnt; p++) delete parm[p];
+}
+
+sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
+
+	//-- open file
+	fopen_s(&cfgFile, cfgFileFullName, "r");
+	if (errno!=0) fail("Could not open configuration file %s . Error %d", cfgFileFullName, errno);
+
+	//-- load flat Keys and Parms strings
+	keysCnt=0;
+	fpos_t currentPos;  
+	currentKey = new sCfgKey();
+	char pname[XMLKEY_PARM_NAME_MAXLEN]; char pval[XMLKEY_PARM_VALS_MAXLEN];
+
+	while (fgets(line, XMLFILE_LINE_MAXLEN, cfgFile)!=NULL) {
+		cleanLine(line);				//-- strip spaces & tabs
+		if (skipLine(line)) continue;	// empty line or comment
+
+		fgetpos(cfgFile, &currentPos);
+		if (isKeyStart(line)) {
+			//-- new sKey
+			key[keysCnt] = new sCfgKey(currentKey->fname, line, currentPos, ((keysCnt>0) ? key[keysCnt-1] : (sCfgKey*)nullptr));
+			//-- update current Key 
+			currentKey=key[keysCnt];
+			//-- update keysCnt
+			keysCnt++;
+		} else 	if (isKeyEnd(line)) {
+			//-- current key becomes current key's parent
+			currentKey=currentKey->parentKey;
 		} else {
-			//-- parameter
-			if (!getValuePair(vLine, readParmDesc, readParmVal, '=')) fail("wrong parameter format: %s", readParmVal);
-			UpperCase(readParmDesc);
-			safespawn(item[childrenCnt], sConfigItem, newsname("%s.%s", name, readParmDesc), dbg, XMLPARM, readParmDesc, readParmVal);			
+			//-- new sParm
+			if (!getValuePair(line, pname, pval, '=')) fail("wrong parameter format: %s", line);
+			currentKey->parm[currentKey->parmsCnt]= new sCfgParm(pname, pval, currentPos);
+			currentKey->parmsCnt++;
 		}
 
 	}
 
+	//-- finally, set currentKey = root
+	currentKey=key[0];
 }
+sCfg::~sCfg() {
+	for (int k=0; k<keysCnt; k++) delete key[k];
+}
+

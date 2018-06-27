@@ -23,15 +23,13 @@ struct sQ : s0 {
 
 struct sRoot : s0 {
 
-	sConfigItem* xmlForecasterRoot;
+	sCfg* xmlForecasterCfg;
 
 	sRoot(sDbg* dbg_) : s0(nullptr, newsname("root"), dbg_) {}
 
 	void run() {
 
-		char* configFile="c:/temp/client.xml";
-		safespawn(xmlForecasterRoot, sConfigItem, newsname("Forecaster XML root Key"), newdbg(), configFile);
-
+		safespawn(xmlForecasterCfg, sCfg, newsname("Forecaster XML main config"), newdbg(), "c:/temp/client.xml");
 
 	}
 
