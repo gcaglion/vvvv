@@ -30,6 +30,7 @@ sCfgKey::sCfgKey() {
 	fname[0]='\0';
 	parentKey=nullptr;
 	parmsCnt=0;
+
 }
 sCfgKey::sCfgKey(char* path_, char* keyLine_, fpos_t pos_, sCfgKey* parentKey_) {
 	pos=pos_;
@@ -83,7 +84,10 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 
 	}
 
+	//-- finally, set currentKey = root
+	currentKey=key[0];
 }
 sCfg::~sCfg() {
 	for (int k=0; k<keysCnt; k++) delete key[k];
 }
+
