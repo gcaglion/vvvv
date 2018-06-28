@@ -1,22 +1,21 @@
 #include "../CommonEnv.h"
 
-#include "../s1/s1.h"
 #include "../ConfigMgr/ConfigMgr.h"
 
-struct sForecaster : s1 {
+struct sForecaster : s0 {
 	int p1;
 
-	sForecaster(s0parmsdef, int p1_) : s1(s0parmsval) {
+	sForecaster(s0parmsdef, int p1_) : s0(s0parmsval) {
 		p1=p1_;
 	}
 };
 
-struct sRoot : s1 {
+struct sRoot : s0 {
 
 	sCfg* xmlForecasterCfg;
 	sForecaster* frc1;
 
-	sRoot(sDbg* rootDbg_) : s1(nullptr, newsname("root"), rootDbg_) {}
+	sRoot(sDbg* rootDbg_) : s0(nullptr, newsname("root"), rootDbg_) {}
 
 	void run() {
 
@@ -38,7 +37,7 @@ struct sRoot : s1 {
 		int maxEpochs;
 		getParmVal(maxEpochs, xmlForecasterCfg, "Custom/Core0/Training/MaxEpochs");
 
-		safespawn(frc1, sForecaster, newsname("Forecaster%d", 99), newCfgDbg(xmlForecasterCfg,"Forecaster"), 99);
+		safespawn(frc1, sForecaster, newsname("Forecaster%d", 99), xmlForecasterCfg->newdbg("/Forecaster"), 99);
 
 	}
 

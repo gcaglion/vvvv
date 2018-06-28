@@ -96,6 +96,8 @@ struct sCfg : s0 {
 	EXPORT bool findKey(const char* dest);
 	EXPORT void setKey(const char* dest);
 
+	EXPORT sDbg* newdbg(char* cfgKeyName_);
+
 	template<typename T> T get(const char* fullParmName_) {
 		T ret;
 		char parmKey[XMLKEY_PATH_MAXLEN];

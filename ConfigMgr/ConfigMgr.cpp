@@ -211,3 +211,29 @@ void sCfg::split(const char* fullDesc, char* oKeyDesc, char* oParmDesc) {
 		oParmDesc[strlen(fullDesc)-lastDotPos]='\0';
 	}
 }
+sDbg* sCfg::newdbg(char* cfgKeyName_) {
+
+	//-- prepare sDbg defaults
+	bool verbose_=DEFAULT_DBG_VERBOSITY; bool dbgtoscreen_=DEFAULT_DBG_TO_SCREEN; bool dbgtofile_=DEFAULT_DBG_TO_FILE; char* outfilepath_=DEFAULT_DBG_FPATH;
+	//-- this is needed because...
+	char outfilepath[XMLKEY_PARM_VAL_MAXLEN]; strcpy_s(outfilepath, XMLKEY_PARM_VAL_MAXLEN, outfilepath_);
+	char* dioporco=&outfilepath[0];
+	//-- backup currentKey
+	sCfgKey* bkpKey=currentKey;
+	//-- go to child Key
+	setKey(cfgKeyName_);
+	//-- find <Debugger> key
+	if (findKey("Debugger")) {
+		//-- if found, override default values
+		if (currentKey->findParm("Verbose")) currentKey->currentParm->getVal(&verbose_);
+		if (currentKey->findParm("ScreenOutput")) currentKey->currentParm->getVal(&dbgtoscreen_);
+		if (currentKey->findParm("FileOutput")) currentKey->currentParm->getVal(&dbgtofile_);
+		if (currentKey->findParm("OutputFileFullName")) currentKey->currentParm->getVal(&dioporco);
+	}
+	//-- restore original key
+	currentKey=bkpKey;
+
+	//-- spawn and return new debugger
+	return (new sDbg(verbose_, dbgtoscreen_, dbgtofile_, outfilepath));
+
+}
