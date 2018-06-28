@@ -1,6 +1,7 @@
 #include "../CommonEnv.h"
 
 #include "../ConfigMgr/ConfigMgr.h"
+#include "../DBConnection/DBConnection.h"
 
 struct sForecaster : s0 {
 	int p1;
@@ -14,6 +15,7 @@ struct sRoot : s0 {
 
 	sCfg* xmlForecasterCfg;
 	sForecaster* frc1;
+	sDBConnection* dbc1;
 
 	sRoot(sDbg* rootDbg_) : s0(nullptr, newsname("root"), rootDbg_) {}
 
@@ -38,6 +40,7 @@ struct sRoot : s0 {
 		getParmVal(maxEpochs, xmlForecasterCfg, "Custom/Core0/Training/MaxEpochs");
 
 		safespawn(frc1, sForecaster, newsname("Forecaster%d", 99), xmlForecasterCfg->newdbg("/Forecaster"), 99);
+		safespawn(dbc1, sDBConnection, newsname("DBConnection%d", 1), xmlForecasterCfg->newdbg("/Forecaster/Data/Train/DataSet/TimeSerie/DataSource/FXData/DBConnection"), "system", "manager", "Algo");
 
 	}
 

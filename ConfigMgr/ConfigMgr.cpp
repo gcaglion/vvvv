@@ -216,8 +216,8 @@ sDbg* sCfg::newdbg(char* cfgKeyName_) {
 	//-- prepare sDbg defaults
 	bool verbose_=DEFAULT_DBG_VERBOSITY; bool dbgtoscreen_=DEFAULT_DBG_TO_SCREEN; bool dbgtofile_=DEFAULT_DBG_TO_FILE; char* outfilepath_=DEFAULT_DBG_FPATH;
 	//-- this is needed because...
-	char outfilepath[XMLKEY_PARM_VAL_MAXLEN]; strcpy_s(outfilepath, XMLKEY_PARM_VAL_MAXLEN, outfilepath_);
-	char* dioporco=&outfilepath[0];
+	char outfilepath[MAX_PATH]; strcpy_s(outfilepath, MAX_PATH, outfilepath_); char* outfileP=&outfilepath[0];
+
 	//-- backup currentKey
 	sCfgKey* bkpKey=currentKey;
 	//-- go to child Key
@@ -228,12 +228,12 @@ sDbg* sCfg::newdbg(char* cfgKeyName_) {
 		if (currentKey->findParm("Verbose")) currentKey->currentParm->getVal(&verbose_);
 		if (currentKey->findParm("ScreenOutput")) currentKey->currentParm->getVal(&dbgtoscreen_);
 		if (currentKey->findParm("FileOutput")) currentKey->currentParm->getVal(&dbgtofile_);
-		if (currentKey->findParm("OutputFileFullName")) currentKey->currentParm->getVal(&dioporco);
+		if (currentKey->findParm("OutFilePath")) currentKey->currentParm->getVal(&outfileP);
 	}
 	//-- restore original key
 	currentKey=bkpKey;
 
 	//-- spawn and return new debugger
-	return (new sDbg(verbose_, dbgtoscreen_, dbgtofile_, outfilepath));
+	return (new sDbg(verbose_, dbgtoscreen_, dbgtofile_, outfileP));
 
 }
