@@ -37,9 +37,7 @@ struct sRoot : s1 {
 
 		int maxEpochs=xmlForecasterCfg->get<int>("Custom/Core0/Training/MaxEpochs");
 
-		s1A0=_spawn1<s1A>(__func__, "s1A0", newsname("TimeSerie%d", 99), newdbg(), xmlForecasterCfg->currentKey, 99);
-
-		//safespawn1(s1A0, s1A, newsname("TimeSerie%d", 99), newdbg(), xmlForecasterCfg->currentKey, 99);
+		safespawn1(s1A0, s1A, newsname("TimeSerie%d", 99), xmlForecasterCfg->currentKey, 99);
 
 	}
 

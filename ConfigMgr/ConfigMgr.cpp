@@ -53,6 +53,14 @@ sCfgKey::sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) {
 sCfgKey::~sCfgKey(){
 	for (int p=0; p<parmsCnt; p++) delete parm[p];
 }
+bool sCfgKey::findKey(const char* dest_) {
+
+	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
+	UpperCase(dest_, dest);
+	if (strcmp(dest_, fname)==0) return true;
+	return false;
+
+}
 
 sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 
@@ -101,35 +109,41 @@ sCfgKey* sCfg::setKey(const char* dest_) {
 	if (!findKey(dest_)) fail("Key %s not found.", dest_);
 	return currentKey;
 }
-bool sCfg::findKey(const char* dest_) {
-	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
-	char fname[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
+
+bool sCfg::buildFullKey(const char* iDest_, char* oFullDest_) {
 	bool found=false;
 
-	if (strcmp(dest_, currentKey->fname)==0) return true;
-
-	UpperCase(dest_, dest);
 	//-- first, establish key full name based on modifiers ('/','.', ... )
-	if (dest[0]=='.' && dest[1]=='.') {
+	if (iDest_[0]=='.' && iDest_[1]=='.') {
 		currentKey=currentKey->parentKey;
-		if (strlen(dest)>2) {
-			sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, &dest[3]);
+		if (strlen(iDest_)>2) {
+			sprintf_s(oFullDest_, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, &iDest_[3]);
 		} else {
 			found=true;
 		}
-	} else if (dest[0]=='/') {
-		if (strlen(dest)>1) {
-			strcpy_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, dest);
+	} else if (iDest_[0]=='/') {
+		if (strlen(iDest_)>1) {
+			strcpy_s(oFullDest_, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, iDest_);
 		} else {
 			currentKey=key[0]->parentKey;
 			found=true;
 		}
 	} else {
-		sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, dest);
+		sprintf_s(oFullDest_, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, iDest_);
 	}
+	return found;
+}
 
-	//-- then, find key using full name
-	if (!found) {
+bool sCfg::findKey(const char* dest_) {
+	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
+	char fname[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
+
+	UpperCase(dest_, dest);
+	if (strcmp(dest, currentKey->fname)==0) return true;
+
+	//-- first, establish key full name based on modifiers ('/','.', ... ), then, find key using full name
+	bool found=buildFullKey(dest, fname);
+	if(!found) {
 		for (int k=0; k<keysCnt; k++) {
 			if (strcmp(fname, key[k]->fname)==0) {
 				currentKey = key[k];

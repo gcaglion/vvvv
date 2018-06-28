@@ -58,6 +58,8 @@ struct sCfgKey {
 	sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_);
 	EXPORT ~sCfgKey();
 
+	EXPORT bool findKey(const char* dest_);
+
 };
 
 struct sCfg : s0 {
@@ -70,6 +72,7 @@ struct sCfg : s0 {
 	EXPORT ~sCfg();
 
 	EXPORT sCfgKey* setKey(const char* dest);
+	bool buildFullKey(const char* iDest_, char* oFullDest_);
 
 	template<typename T> T get(const char* fullParmName_) {
 		T ret;

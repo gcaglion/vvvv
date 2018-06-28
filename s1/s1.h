@@ -13,26 +13,18 @@ struct s1 : s0 {
 	EXPORT s1(s1parmsdef);
 	EXPORT virtual ~s1();
 
-	template<class className, class methodName, class ...methodArgs> void _callM(const char* callerFunc_, char* objVarName_, className* obj, char* metS, methodName met, methodArgs... mArgs) {
-
-		svard* callSvard=new svard();
-		callSvard->variadic(mArgs...);
-		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s->%s(%s)", objVarName_, metS, callSvard->fullval);
-
-		try {
-			info("%s TRYING  : %s", name, cmd);
-			(obj->*met)(mArgs...);
-			info("%s SUCCESS : %s", name, cmd);
-		}
-		catch (std::exception exc) {
-			fail("%s FAILURE : %s . Exception: %s", name, cmd, exc.what());
-		}
-	}
-
-	template <class objT, class ...classArgs> EXPORT objT* _spawn1(const char* callerFunc_, const char* objVarName_, sName* childSname_, sDbg* childDbg_, sCfgKey* childCfg_, classArgs... childCargs) {
+	template <class objT, class ...classArgs> EXPORT objT* _spawn1(const char* callerFunc_, const char* objVarName_, sName* childSname_, sCfgKey* childCfg_, classArgs... childCargs) {
 		svard* childSvard=new svard();
 		childSvard->variadic(childCargs...);
 		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", objVarName_, typeid(objT).name(), childSvard->fullval);
+
+		//-- look for Debug configuration in xml
+		sDbg* childDbg_;
+		if (childCfg_->findKey("Debugger")) {
+
+		} else {
+			childDbg_=newdbg();
+		}
 
 		objT* retObj;
 		try {
@@ -50,4 +42,4 @@ struct s1 : s0 {
 
 };
 
-#define safespawn1(objVarName_, className_, objSname_, objDbg_, objCfgKey_, ...) objVarName_ = _spawn1<className_>(__func__, #objVarName_, objSname_, objDbg_, objCfgKey_, __VA_ARGS__)
+#define safespawn1(objVarName_, className_, objSname_, objCfgKey_, ...) objVarName_ = _spawn1<className_>(__func__, #objVarName_, objSname_, objCfgKey_, __VA_ARGS__)
