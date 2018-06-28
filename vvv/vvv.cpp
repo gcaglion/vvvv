@@ -3,10 +3,10 @@
 #include "../s1/s1.h"
 #include "../ConfigMgr/ConfigMgr.h"
 
-struct s1A : s1 {
+struct sForecaster : s1 {
 	int p1;
 
-	s1A(s1parmsdef, int p1_): s1(s1parmsval) {
+	sForecaster(s0parmsdef, int p1_) : s1(s0parmsval) {
 		p1=p1_;
 	}
 };
@@ -14,13 +14,13 @@ struct s1A : s1 {
 struct sRoot : s1 {
 
 	sCfg* xmlForecasterCfg;
-	s1A* s1A0;
+	sForecaster* frc1;
 
-	sRoot(sDbg* dbg_) : s1(nullptr, newsname("root"), dbg_, nullptr) {}
+	sRoot(sDbg* rootDbg_) : s1(nullptr, newsname("root"), rootDbg_) {}
 
 	void run() {
 
-		safespawn0(xmlForecasterCfg, sCfg, newsname("Forecaster XML main config"), newdbg(), "c:/temp/client.xml");
+		safespawn(xmlForecasterCfg, sCfg, newsname("Forecaster XML main config"), defaultdbg, "c:/temp/client.xml");
 
 		//-- absolute key
 		safecall(sCfg, xmlForecasterCfg, setKey, "/Forecaster/Data/Train/Dataset");
@@ -35,9 +35,10 @@ struct sRoot : s1 {
 		//-- ../<key>
 		safecall(sCfg, xmlForecasterCfg, setKey, "../Engine");
 
-		int maxEpochs=xmlForecasterCfg->get<int>("Custom/Core0/Training/MaxEpochs");
+		int maxEpochs;
+		getParmVal(maxEpochs, xmlForecasterCfg, "Custom/Core0/Training/MaxEpochs");
 
-		safespawn1(s1A0, s1A, newsname("TimeSerie%d", 99), xmlForecasterCfg->currentKey, 99);
+		safespawn(frc1, sForecaster, newsname("Forecaster%d", 99), newCfgDbg(xmlForecasterCfg,"Forecaster"), 99);
 
 	}
 
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
 
 	sRoot* root=nullptr;
 	try {
-		root=new sRoot(newdbg());
+		root=new sRoot(defaultdbg);
 		root->run();
 		printf("main() successful.\n");
 		ret=0;

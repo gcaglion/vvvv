@@ -1,7 +1,7 @@
 #include "dbg.h"
 
-sDbg::sDbg(bool verbose_, bool destscreen_, bool destfile_, char* outfilepath_) {
-	verbose=verbose_; destscreen=destscreen_, destfile=destfile_;
+sDbg::sDbg(bool verbose_, bool dbgtoscreen_, bool dbgtofile_, char* outfilepath_) {
+	verbose=verbose_; dbgtoscreen=dbgtoscreen_, dbgtofile=dbgtofile_;
 	strcpy_s(outfilepath, MAX_PATH, outfilepath_);
 	stack[0]='\0';
 	outfile=nullptr;
@@ -37,7 +37,7 @@ void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask_, ...) {
 	strcat_s(stack, DBG_STACK_MAXLEN, msg);
 	va_end(va_args);
 
-	if (destscreen) printf("%s", msg);
-	if (destfile && outfile!=nullptr) fprintf(outfile, "%s", msg);
+	if (dbgtoscreen) printf("%s", msg);
+	if (dbgtofile && outfile!=nullptr) fprintf(outfile, "%s", msg);
 
 }

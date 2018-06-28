@@ -2,8 +2,8 @@
 #include "../CommonEnv.h"
 #include "../Utils/Utils.h"
 
-#define DEFAULT_DBG_DEST_SCREEN	true
-#define DEFAULT_DBG_DEST_FILE	true
+#define DEFAULT_DBG_TO_SCREEN	true
+#define DEFAULT_DBG_TO_FILE	true
 #define DEFAULT_DBG_FPATH		"C:/temp/logs"
 #define DEFAULT_DBG_FNAME		"Debugger"
 #define DEFAULT_DBG_VERBOSITY	true
@@ -25,8 +25,8 @@
 struct sDbg {
 	int stackLevel;
 	bool verbose;
-	bool destfile;
-	bool destscreen;
+	bool dbgtofile;
+	bool dbgtoscreen;
 	bool timing;
 	bool pauseOnError;
 	char outfilepath[MAX_PATH];
@@ -36,11 +36,11 @@ struct sDbg {
 	char msg[DBG_MSG_MAXLEN];
 	char stack[DBG_STACK_MAXLEN];
 
-	EXPORT sDbg(bool verbose_=DEFAULT_DBG_VERBOSITY, bool destscreen_=DEFAULT_DBG_DEST_SCREEN, bool destfile_=DEFAULT_DBG_DEST_FILE, char* outfilepath_=DEFAULT_DBG_FPATH);
+	EXPORT sDbg(bool verbose_=DEFAULT_DBG_VERBOSITY, bool dbgtoscreen_=DEFAULT_DBG_TO_SCREEN, bool dbgtofile_=DEFAULT_DBG_TO_FILE, char* outfilepath_=DEFAULT_DBG_FPATH);
 	EXPORT ~sDbg();
 
 	EXPORT void createOutFile(char* parentName, void* parentAddr);
 	EXPORT void out(int msgtype, const char* callerFunc_, char* msgMask_, ...);
 
 };
-#define newdbg(...) new sDbg(__VA_ARGS__)
+#define defaultdbg new sDbg(DEFAULT_DBG_VERBOSITY, DEFAULT_DBG_TO_SCREEN, DEFAULT_DBG_TO_FILE, DEFAULT_DBG_FPATH)

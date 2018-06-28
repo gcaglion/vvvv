@@ -49,6 +49,7 @@ struct s0 {
 	}
 
 	template <class objT, class ...classArgs> objT* _spawn(const char* callerFunc_, char* objVarName_, sName* childSname_, sDbg* childDbg_, classArgs... childCargs){
+
 		svard* childSvard=new svard();
 		childSvard->variadic(childCargs...);
 		char cmd[CMD_MAXLEN]; sprintf_s(cmd, CMD_MAXLEN, "%s = new %s(%s)", objVarName_, typeid(objT).name(), childSvard->fullval);
@@ -70,4 +71,4 @@ struct s0 {
 };
 
 #define safecall(className_, objName_, methodName_, ...) _callM<className_>(__func__, objName_->name, objName_, #methodName_, &className_::methodName_, __VA_ARGS__)
-#define safespawn0(objVarName_, className_, objSname_, objDbg_, ...) objVarName_ = _spawn<className_>(__func__, #objVarName_, objSname_, objDbg_, __VA_ARGS__)
+#define safespawn(objVarName_, className_, objSname_, objDbg_, ...) objVarName_ = _spawn<className_>(__func__, #objVarName_, objSname_, objDbg_, __VA_ARGS__)

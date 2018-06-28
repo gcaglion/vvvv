@@ -27,7 +27,7 @@ s0::s0(s0parmsdef){
 	//delete dbg_;
 	//-- sets dbg stackLevel and creates dbg outfile AFTER dbg creation, to get s0 object name
 	dbg->stackLevel=stackLevel;
-	if (dbg->destfile) dbg->createOutFile(name, this);
+	if (dbg->dbgtofile) dbg->createOutFile(name, this);
 
 }
 

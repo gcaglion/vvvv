@@ -22,9 +22,48 @@ sCfgParm::sCfgParm(char* name_, char* valS_, fpos_t pos_) {
 	pos=pos_;
 	//strcpy_s(name, XMLKEY_PARM_NAME_MAXLEN, name_); 
 	//strcpy_s(valS, XMLKEY_PARM_VALS_MAXLEN, valS_); UpperCase(valS);	
+	valS=(char**)malloc(XMLKEY_PARM_VAL_MAXCNT*sizeof(char*)); for (int v=0; v<XMLKEY_PARM_VAL_MAXCNT; v++) valS[v]=(char*)malloc(XMLKEY_PARM_VAL_MAXLEN);
 	UpperCase(name_, name);
-	UpperCase(valS_, valS);
+	valScnt=cslToArray(valS_, ',', valS);
+	for (int v=0; v<valScnt; v++) UpperCase(valS_, valS[v]);
 }
+sCfgParm::~sCfgParm() {
+	for (int v=0; v<XMLKEY_PARM_VAL_MAXCNT; v++) free(valS[v]);
+	free(valS);
+}
+//--
+void sCfgParm::getVal(int* oVal){ return(getVal(&oVal)); }
+void sCfgParm::getVal(char** oVal){ return(getVal(&oVal)); }
+void sCfgParm::getVal(numtype* oVal) { return(getVal(&oVal)); }
+void sCfgParm::getVal(bool* oVal){ return(getVal(&oVal)); }
+//--
+void sCfgParm::getVal(int** oVal){
+	for (int v=0; v<valScnt; v++) {
+		if (isnumber(valS[v])) {
+			(*oVal[v])=atoi(valS[v]);
+		} else {
+			//----- decode...
+		}
+	}
+}
+void sCfgParm::getVal(char*** oVal){
+	for (int v=0; v<valScnt; v++) {
+		strcpy_s((*oVal[v]), XMLKEY_PARM_VAL_MAXLEN, valS[v]);
+	}
+}
+void sCfgParm::getVal(numtype** oVal){
+	for (int v=0; v<valScnt; v++) {
+		(*oVal[v])=(numtype)atof(valS[v]);
+	}
+}
+void sCfgParm::getVal(bool** oVal){
+	for (int v=0; v<valScnt; v++) {
+		(*oVal[v]) = (strcmp(valS[v], "TRUE")==0);
+	}
+}
+
+
+
 sCfgKey::sCfgKey() {
 	pos=0;
 	path[0]='\0';
@@ -33,7 +72,7 @@ sCfgKey::sCfgKey() {
 	fname[0]='\0';
 	parentKey=nullptr;
 	parmsCnt=0;
-
+	currentParm=nullptr;
 }
 sCfgKey::sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) {
 	pos=pos_;
@@ -53,13 +92,17 @@ sCfgKey::sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) {
 sCfgKey::~sCfgKey(){
 	for (int p=0; p<parmsCnt; p++) delete parm[p];
 }
-bool sCfgKey::findKey(const char* dest_) {
+bool sCfgKey::findParm(const char* pDesc_){
+	char pDesc[XMLKEY_PARM_NAME_MAXLEN];
+	UpperCase(pDesc_, pDesc);
 
-	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
-	UpperCase(dest_, dest);
-	if (strcmp(dest_, fname)==0) return true;
+	for (int p=0; p<parmsCnt; p++) {
+		if (strcmp(pDesc, parm[p]->name)==0) {
+			currentParm=parm[p];
+			return true;
+		}
+	}
 	return false;
-
 }
 
 sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
@@ -72,7 +115,8 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 	keysCnt=0;
 	fpos_t currentPos;  
 	currentKey = new sCfgKey();
-	char pname[XMLKEY_PARM_NAME_MAXLEN]; char pval[XMLKEY_PARM_VALS_MAXLEN];
+	char pname[XMLKEY_PARM_NAME_MAXLEN];
+	char pvalFull[XMLKEY_PARM_VAL_MAXCNT*XMLKEY_PARM_VAL_MAXLEN];
 
 	while (fgets(line, XMLFILE_LINE_MAXLEN, cfgFile)!=NULL) {
 		cleanLine(line);				//-- strip spaces & tabs
@@ -91,10 +135,11 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 			currentKey=currentKey->parentKey;
 		} else {
 			//-- new sParm
-			if (!getValuePair(line, pname, pval, '=')) fail("wrong parameter format: %s", line);
-			UpperCase(pval, pval);
-			currentKey->parm[currentKey->parmsCnt]= new sCfgParm(pname, pval, currentPos);
+			if (!getValuePair(line, pname, pvalFull, '=')) fail("wrong parameter format: %s", line);
+			UpperCase(pvalFull, pvalFull);
+			currentKey->parm[currentKey->parmsCnt]= new sCfgParm(pname, pvalFull, currentPos);
 			currentKey->parmsCnt++;
+			currentKey->currentParm++;
 		}
 
 	}
@@ -104,10 +149,6 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 }
 sCfg::~sCfg() {
 	for (int k=0; k<keysCnt; k++) delete key[k];
-}
-sCfgKey* sCfg::setKey(const char* dest_) {
-	if (!findKey(dest_)) fail("Key %s not found.", dest_);
-	return currentKey;
 }
 
 bool sCfg::buildFullKey(const char* iDest_, char* oFullDest_) {
@@ -153,4 +194,20 @@ bool sCfg::findKey(const char* dest_) {
 		}
 	}
 	return found;
+}
+void sCfg::setKey(const char* dest) {
+	if (!findKey(dest)) fail("could not find Key %s . currentKey = %s", dest, currentKey->fname);
+}
+
+void sCfg::split(const char* fullDesc, char* oKeyDesc, char* oParmDesc) {
+	int lastDotPos=instr('/', fullDesc, true);
+	if (lastDotPos<0) {
+		oKeyDesc[0]='\0';
+		strcpy_s(oParmDesc, XMLKEY_PARM_NAME_MAXLEN, fullDesc);
+	} else {
+		memcpy_s(oKeyDesc, XMLKEY_PARM_NAME_MAXLEN, fullDesc, lastDotPos);
+		oKeyDesc[lastDotPos]='\0';
+		memcpy_s(oParmDesc, XMLKEY_NAME_MAXLEN, &fullDesc[lastDotPos+1], strlen(fullDesc)-lastDotPos);
+		oParmDesc[strlen(fullDesc)-lastDotPos]='\0';
+	}
 }
