@@ -35,21 +35,6 @@ struct sCfgParm {
 	EXPORT void getVal(numtype** oVal);
 	EXPORT void getVal(bool** oVal);
 
-	/*template<typename T> T getVal() {
-		for(int v=0; v<valsCnt; v++){
-		if (typeid(T)==typeid(intVar)) {
-			if (isnumber(valS[v])) {
-				return atoi(valS[v]);
-			} else {
-				//--... decode ...
-			}
-		}
-		if (typeid(T)==typeid(charPVar)) return valS[v];
-		if (typeid(T)==typeid(numtypeVar)) return atof(valS[v]);
-		if (typeid(T)==typeid(boolVar)) return (strcmp(valS[v], "TRUE")==0);
-		}
-	}*/
-
 private:
 	int intVar;
 	char* charPVar;
@@ -60,6 +45,7 @@ private:
 	numtype* numtypeArrVar;
 	bool* boolArrVar;
 };
+
 struct sCfgKey {
 	//-- id props
 	fpos_t pos;
@@ -113,6 +99,7 @@ private:
 	char line[XMLFILE_LINE_MAXLEN];
 	bool buildFullKey(const char* iDest_, char* oFullDest_);
 };
+
 #define getParmVal(pVarName_, sCfgVarName_, pDesc_) { \
 	if(typeid(pVarName_)==typeid(int)) pVarName_=sCfgVarName_->get<int>(pDesc_); \
 }

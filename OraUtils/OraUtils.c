@@ -214,7 +214,7 @@ void getCurrentTime(char* ot) {
 }
 
 //=== DB common functions
-EXPORT bool  OraConnect(tDebuggerC* dbg, tDBConnection* DBConnInfo) {
+EXPORT bool  OraConnect(tDbgParms* dbgparms, tDBConnection* DBConnInfo) {
 
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
@@ -413,7 +413,7 @@ EXPORT void OraCommit(tDBConnection* DBConnInfo) {
 }
 
 //=== Retrieval functions
-EXPORT bool Ora_GetFlatOHLCV(tDebuggerC* dbg, tDBConnection* db, char* pSymbol, char* pTF, char* pDate0, int pRecCount, char** oBarTime, float* oBarData, char* oBaseTime, float* oBaseBar) {
+EXPORT bool Ora_GetFlatOHLCV(tDbgParms* dbgparms, tDBConnection* db, char* pSymbol, char* pTF, char* pDate0, int pRecCount, char** oBarTime, float* oBarData, char* oBaseTime, float* oBaseBar) {
 	//-- 'Flat' bar means returning OHLC(V) values for each record as an array 
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
@@ -699,7 +699,7 @@ EXPORT bool Ora_GetFlatOHLCV(tDebuggerC* dbg, tDBConnection* db, char* pSymbol, 
 }
 
 //=== Logging functions
-EXPORT bool Ora_LogSaveMSE(tDebuggerC* dbg, tDBConnection* db, int pid, int tid, int mseCnt, float* mseT, float* mseV) {
+EXPORT bool Ora_LogSaveMSE(tDbgParms* dbgparms, tDBConnection* db, int pid, int tid, int mseCnt, float* mseT, float* mseV) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int i;
@@ -1065,7 +1065,7 @@ EXPORT bool Ora_LogSaveMSE(tDebuggerC* dbg, tDBConnection* db, int pid, int tid,
 
 	return (sqlca.sqlcode==0);
 }
-EXPORT bool Ora_LogSaveW(tDebuggerC* dbg, tDBConnection* db, int pid, int tid, int epoch, int Wcnt, numtype* W) {
+EXPORT bool Ora_LogSaveW(tDbgParms* dbgparms, tDBConnection* db, int pid, int tid, int epoch, int Wcnt, numtype* W) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int i;
@@ -1430,7 +1430,7 @@ EXPORT bool Ora_LogSaveW(tDebuggerC* dbg, tDBConnection* db, int pid, int tid, i
 
 	return (sqlca.sqlcode==0);
 }
-EXPORT bool Ora_LogSaveClient(tDebuggerC* dbg, tDBConnection* db, int pid, char* clientName, DWORD startTime, DWORD duration, int simulLen, char* simulStart, bool doTrain, bool doTrainRun, bool doTestRun) {
+EXPORT bool Ora_LogSaveClient(tDbgParms* dbgparms, tDBConnection* db, int pid, char* clientName, DWORD startTime, DWORD duration, int simulLen, char* simulStart, bool doTrain, bool doTrainRun, bool doTestRun) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = db->DBCtx;
@@ -1493,7 +1493,7 @@ EXPORT bool Ora_LogSaveClient(tDebuggerC* dbg, tDBConnection* db, int pid, char*
 	}
 	return true;
 }
-EXPORT bool Ora_LogSaveRun(tDebuggerC* dbg, tDBConnection* db, int pid, int tid, int setid, int npid, int ntid, int barCnt, int featuresCnt, int* feature, numtype* prediction, numtype* actual) {
+EXPORT bool Ora_LogSaveRun(tDbgParms* dbgparms, tDBConnection* db, int pid, int tid, int setid, int npid, int ntid, int barCnt, int featuresCnt, int* feature, numtype* prediction, numtype* actual) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int i, b, f;
@@ -2067,7 +2067,7 @@ EXPORT bool Ora_LogSaveRun(tDebuggerC* dbg, tDBConnection* db, int pid, int tid,
 	return (sqlca.sqlcode==0);
 }
 
-EXPORT bool Ora_LogLoadW(tDebuggerC* dbg, tDBConnection* db, int pid, int tid, int epoch, int Wcnt, numtype* oW) {
+EXPORT bool Ora_LogLoadW(tDbgParms* dbgparms, tDBConnection* db, int pid, int tid, int epoch, int Wcnt, numtype* oW) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int i;

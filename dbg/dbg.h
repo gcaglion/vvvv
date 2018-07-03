@@ -1,5 +1,6 @@
 #pragma once
 #include "../CommonEnv.h"
+#include <stdio.h>
 #include "../Utils/Utils.h"
 
 #define DEFAULT_DBG_TO_SCREEN	true
@@ -17,18 +18,19 @@
 #define DBG_MSG_FAIL  2
 //--
 
-
+#ifdef __cplusplus
 #define info(msgMask_, ...) dbg->out(DBG_MSG_INFO, __func__, msgMask_, __VA_ARGS__)
 #define err(msgMask_, ...) dbg->out(DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__)
 #define fail(msgMask_, ...) { dbg->out(DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__); throw std::exception(dbg->msg);}
+#endif
 
-struct sDbg {
+typedef struct sDbg {
 	int stackLevel;
-	bool verbose;
-	bool dbgtofile;
-	bool dbgtoscreen;
-	bool timing;
-	bool pauseOnError;
+	Bool verbose;
+	Bool dbgtofile;
+	Bool dbgtoscreen;
+	Bool timing;
+	Bool pauseOnError;
 	char outfilepath[MAX_PATH];
 	char outfilename[MAX_PATH];
 	char outfilefullname[MAX_PATH];
@@ -36,11 +38,12 @@ struct sDbg {
 	char msg[DBG_MSG_MAXLEN];
 	char stack[DBG_STACK_MAXLEN];
 
-	EXPORT sDbg(bool verbose_=DEFAULT_DBG_VERBOSITY, bool dbgtoscreen_=DEFAULT_DBG_TO_SCREEN, bool dbgtofile_=DEFAULT_DBG_TO_FILE, char* outfilepath_=DEFAULT_DBG_FPATH);
-	EXPORT ~sDbg();
-
-	EXPORT void createOutFile(char* parentName, void* parentAddr);
+#ifdef __cplusplus
 	EXPORT void out(int msgtype, const char* callerFunc_, char* msgMask_, ...);
+	EXPORT sDbg(Bool verbose_=DEFAULT_DBG_VERBOSITY, Bool dbgtoscreen_=DEFAULT_DBG_TO_SCREEN, Bool dbgtofile_=DEFAULT_DBG_TO_FILE, char* outfilepath_=DEFAULT_DBG_FPATH);
+	EXPORT ~sDbg();	
+	EXPORT void createOutFile(char* parentName, void* parentAddr);
+#endif
+} tDbgParms;
 
-};
 #define defaultdbg new sDbg(DEFAULT_DBG_VERBOSITY, DEFAULT_DBG_TO_SCREEN, DEFAULT_DBG_TO_FILE, DEFAULT_DBG_FPATH)

@@ -1,6 +1,6 @@
 #include "dbg.h"
 
-sDbg::sDbg(bool verbose_, bool dbgtoscreen_, bool dbgtofile_, char* outfilepath_) {
+sDbg::sDbg(Bool verbose_, Bool dbgtoscreen_, Bool dbgtofile_, char* outfilepath_) {
 	verbose=verbose_; dbgtoscreen=dbgtoscreen_, dbgtofile=dbgtofile_;
 	strcpy_s(outfilepath, MAX_PATH, outfilepath_);
 	stack[0]='\0';
@@ -32,7 +32,6 @@ void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask_, ...) {
 	va_list va_args;
 	va_start(va_args, msgMask_);
 	vsprintf_s(tmpmsg, DBG_MSG_MAXLEN, msgMask_, va_args);
-	//sprintf_s(msg, DBG_MSG_MAXLEN, "%s[%s] %s\n", indent, timestamp, tmpmsg);
 	sprintf_s(msg, DBG_MSG_MAXLEN, "%s%s\n", indent, tmpmsg);
 	strcat_s(stack, DBG_STACK_MAXLEN, msg);
 	va_end(va_args);
@@ -41,3 +40,4 @@ void sDbg::out(int msgtype, const char* callerFunc_, char* msgMask_, ...) {
 	if (dbgtofile && outfile!=nullptr) fprintf(outfile, "%s", msg);
 
 }
+

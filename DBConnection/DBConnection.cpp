@@ -7,6 +7,10 @@ sDBConnection::sDBConnection(s0parmsdef, const char* username, const char* passw
 	strcpy_s(DBConnString, DBCONNSTRING_MAXLEN, connstring);
 	DBCtx=NULL;
 }
+sDBConnection::sDBConnection(s0parmsdef, sCfgKey* cfgKey_) : s0(s0parmsval) {
+	cfgKey_->findParm("DBuser");
+}
+
 sDBConnection::~sDBConnection() {
 
 }

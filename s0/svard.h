@@ -16,7 +16,7 @@ struct svard {
 	numtype pvalF[PARMS_MAXCNT];
 	long*   pvalP[PARMS_MAXCNT];
 	char fullval[PARMS_MAXCNT*PARM_VAL_MAXLEN];
-
+#ifdef __cplusplus
 	void select(const char* a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "\"%s\", "); }
 	void select(char* a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "\"%s\", "); }
 	void select(int a) { strcpy_s(pmask[pcnt], PARM_MASK_LEN, "%d, "); }
@@ -54,6 +54,7 @@ struct svard {
 		lastp=false;
 		fullval[0]='\0';
 	}
-	
+#endif
+
 };
 
