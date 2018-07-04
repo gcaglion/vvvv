@@ -8,7 +8,7 @@
 #define XMLKEY_MAXCNT		1024
 #define XMLKEY_MAXDEPTH		32
 #define XMLKEY_NAME_MAXLEN	64
-#define XMLKEY_PATH_MAXLEN	XMLKEY_MAXDEPTH*(XMLKEY_NAME_MAXLEN+1)
+#define XMLKEY_PATH_MAXLEN	XMLKEY_MAXDEPTH*XMLKEY_NAME_MAXLEN
 #define XMLKEY_PARM_MAXCNT	32
 #define XMLKEY_PARM_NAME_MAXLEN XMLKEY_NAME_MAXLEN
 #define XMLKEY_PARM_VAL_MAXCNT	32
@@ -46,13 +46,13 @@ private:
 	bool* boolArrVar;
 };
 
-struct sCfgKey {
+struct sCfgKey : s0 {
 	//-- id props
 	fpos_t pos;
 	int depth;
 	char path[XMLKEY_PATH_MAXLEN];
-	char name[XMLKEY_NAME_MAXLEN];
-	char fname[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
+	//char name[XMLKEY_NAME_MAXLEN];
+	char fname[XMLKEY_PATH_MAXLEN];
 	//-- parent props
 	sCfgKey* parentKey;
 	//-- children props
@@ -60,8 +60,8 @@ struct sCfgKey {
 	sCfgParm* parm[XMLKEY_PARM_MAXCNT];
 	sCfgParm* currentParm;
 
-	sCfgKey();
-	sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_);
+	sCfgKey(s0parmsdef);
+	sCfgKey(s0parmsdef, sCfgKey* parentKey_, char* keyLine_, fpos_t pos_);
 	EXPORT ~sCfgKey();
 
 	EXPORT bool findParm(const char* pDesc_);

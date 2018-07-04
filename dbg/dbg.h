@@ -46,4 +46,6 @@ typedef struct sDbg {
 #endif
 } tDbgParms;
 
-#define defaultdbg new sDbg(DEFAULT_DBG_VERBOSITY, DEFAULT_DBG_TO_SCREEN, DEFAULT_DBG_TO_FILE, DEFAULT_DBG_FPATH)
+//#define defaultdbg new sDbg(DEFAULT_DBG_VERBOSITY, DEFAULT_DBG_TO_SCREEN, DEFAULT_DBG_TO_FILE, DEFAULT_DBG_FPATH)
+#define nulldbg nullptr
+

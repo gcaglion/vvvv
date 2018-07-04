@@ -11,17 +11,41 @@ struct sForecaster : s0 {
 	}
 };
 
+template<typename...> struct Tuple {};
+template<typename T1, typename T2> struct Pair {};
+
+template<class ...Args1> struct zip {
+	template<class ...Args2> struct with {
+		typedef Tuple<Pair<Args1, Args2>...> type;
+		//        Pair<Args1, Args2>... is the pack expansion
+		//        Pair<Args1, Args2> is the pattern
+	};
+};
+
+// Pair<Args1, Args2>... expands to
+// Pair<short, unsigned short>, Pair<int, unsigned int> 
+// T1 is Tuple<Pair<short, unsigned short>, Pair<int, unsigned>>
+
+struct sPPP {
+	int p;
+
+	sPPP(int p_) { p=p_; }
+
+};
+
 struct sRoot : s0 {
 
 	sCfg* xmlForecasterCfg;
-	sForecaster* frc1;
 	sDBConnection* dbc1;
 
 	sRoot(sDbg* rootDbg_) : s0(nullptr, newsname("root"), rootDbg_) {}
 
 	void run() {
 
-		safespawn(xmlForecasterCfg, sCfg, newsname("Forecaster XML main config"), defaultdbg, "c:/temp/client.xml");
+		sPPP* sfr1=new sVar<sPPP> ("PPP_%d", 99);
+
+
+		safespawn(xmlForecasterCfg, sCfg, newsname("Forecaster XML main config"), nulldbg, "c:/temp/client.xml");
 
 		//-- absolute key
 		safecall(sCfg, xmlForecasterCfg, setKey, "/Forecaster/Data/Train/Dataset");
@@ -39,7 +63,6 @@ struct sRoot : s0 {
 		int maxEpochs;
 		getParmVal(maxEpochs, xmlForecasterCfg, "Custom/Core0/Training/MaxEpochs");
 
-		safespawn(frc1, sForecaster, newsname("Forecaster%d", 99), xmlForecasterCfg->newdbg("/Forecaster"), 99);
 		safespawn(dbc1, sDBConnection, newsname("DBConnection%d", 1), xmlForecasterCfg->newdbg("/Forecaster/Data/Train/DataSet/TimeSerie/DataSource/FXData/DBConnection"), "system", "manager", "Algo");
 
 	}
@@ -53,7 +76,7 @@ int main(int argc, char* argv[]) {
 
 	sRoot* root=nullptr;
 	try {
-		root=new sRoot(defaultdbg);
+		root=new sRoot(nulldbg);
 		root->run();
 		printf("main() successful.\n");
 		ret=0;

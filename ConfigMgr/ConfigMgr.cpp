@@ -64,17 +64,17 @@ void sCfgParm::getVal(bool** oVal){
 
 
 
-sCfgKey::sCfgKey() {
+sCfgKey::sCfgKey(s0parmsdef) : s0 (s0parmsval) {
 	pos=0;
 	path[0]='\0';
 	depth=0;
-	name[0]='\0';
+	//name[0]='\0';
 	fname[0]='\0';
 	parentKey=nullptr;
 	parmsCnt=0;
 	currentParm=nullptr;
 }
-sCfgKey::sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) {
+sCfgKey::sCfgKey(s0parmsdef, sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) : s0(s0parmsval) {
 	pos=pos_;
 	parentKey=parentKey_;
 	if (parentKey==nullptr) {
@@ -114,7 +114,8 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 	//-- load flat Keys and Parms strings
 	keysCnt=0;
 	fpos_t currentPos;  
-	currentKey = new sCfgKey();
+	//currentKey = new sCfgKey((s0*)this, newsname(""), dbg);
+	safespawn(currentKey, sCfgKey, newsname(""), dbg);
 	char pname[XMLKEY_PARM_NAME_MAXLEN];
 	char pvalFull[XMLKEY_PARM_VAL_MAXCNT*XMLKEY_PARM_VAL_MAXLEN];
 
@@ -125,7 +126,8 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 		fgetpos(cfgFile, &currentPos);
 		if (isKeyStart(line)) {
 			//-- new sKey
-			key[keysCnt] = new sCfgKey(currentKey, line, currentPos);
+			//key[keysCnt] = new sCfgKey(this, new sName(line), dbg);
+			safespawn(key[keysCnt], sCfgKey, newsname(line), dbg);
 			//-- update current Key 
 			currentKey=key[keysCnt];
 			//-- update keysCnt

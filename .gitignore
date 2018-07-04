@@ -16,6 +16,7 @@ Win32/*
 .vs/*
 ipch/*
 *.VS*
+dbg/temp/*
 
 # MT4 stuff
 *.ex4
