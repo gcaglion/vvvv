@@ -22,6 +22,10 @@
 #define info(msgMask_, ...) dbg->out(DBG_MSG_INFO, __func__, msgMask_, __VA_ARGS__)
 #define err(msgMask_, ...) dbg->out(DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__)
 #define fail(msgMask_, ...) { dbg->out(DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__); throw std::exception(dbg->msg);}
+#else
+#define info(msgMask_, ...) out(dbg, DBG_MSG_INFO, __func__, msgMask_, __VA_ARGS__)
+#define err(msgMask_, ...) out(dbg, DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__)
+#define fail(msgMask_, ...) { out(dbg, DBG_MSG_ERR, __func__, msgMask_, __VA_ARGS__); throw std::exception(dbg->msg);}
 #endif
 
 typedef struct sDbg {
@@ -44,6 +48,6 @@ typedef struct sDbg {
 	EXPORT ~sDbg();	
 	EXPORT void createOutFile(char* parentName, void* parentAddr);
 #endif
-} tDbgParms;
+} tDbg;
 
 #define defaultdbg new sDbg(DEFAULT_DBG_VERBOSITY, DEFAULT_DBG_TO_SCREEN, DEFAULT_DBG_TO_FILE, DEFAULT_DBG_FPATH)
