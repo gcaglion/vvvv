@@ -18,14 +18,12 @@ bool isKeyEnd(char* line) {
 	return (line[0]=='<' && line[1]=='/' && line[strlen(line)-1]=='>');
 }
 
-sCfgParm::sCfgParm(char* name_, char* valS_, fpos_t pos_) {
-	pos=pos_;
-	//strcpy_s(name, XMLKEY_PARM_NAME_MAXLEN, name_); 
-	//strcpy_s(valS, XMLKEY_PARM_VALS_MAXLEN, valS_); UpperCase(valS);	
+sCfgParm::sCfgParm(s0parmsdef, char* parmLine_) : s0(s0parmsval) {
+
 	valS=(char**)malloc(XMLKEY_PARM_VAL_MAXCNT*sizeof(char*)); for (int v=0; v<XMLKEY_PARM_VAL_MAXCNT; v++) valS[v]=(char*)malloc(XMLKEY_PARM_VAL_MAXLEN);
-	UpperCase(name_, name);
-	valScnt=cslToArray(valS_, ',', valS);
-	for (int v=0; v<valScnt; v++) UpperCase(valS_, valS[v]);
+	int tmp=cslToArray(parmLine_, '=', valS);
+	if(tmp!=2) fail("wrong parameter format: %s", parmLine_);
+	valScnt=cslToArray(valS[0], ',', valS);
 }
 sCfgParm::~sCfgParm() {
 	for (int v=0; v<XMLKEY_PARM_VAL_MAXCNT; v++) free(valS[v]);
@@ -64,46 +62,13 @@ void sCfgParm::getVal(bool** oVal){
 
 
 
-sCfgKey::sCfgKey() {
-	pos=0;
-	path[0]='\0';
-	depth=0;
-	name[0]='\0';
-	fname[0]='\0';
-	parentKey=nullptr;
-	parmsCnt=0;
-	currentParm=nullptr;
-}
-sCfgKey::sCfgKey(sCfgKey* parentKey_, char* keyLine_, fpos_t pos_) {
-	pos=pos_;
-	parentKey=parentKey_;
-	if (parentKey==nullptr) {
-		path[0]='\0'; 
-		depth=0;
-	} else {
-		depth=parentKey->depth+1;
-	}
-	memcpy_s(name, XMLKEY_NAME_MAXLEN, &keyLine_[1], strlen(keyLine_)-2); name[strlen(keyLine_)-2]='\0';
-	UpperCase(name, name);
-	strcpy_s(path, XMLKEY_PATH_MAXLEN, parentKey->fname);
-	sprintf_s(fname, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", path, name);
-	parmsCnt=0;
-}
-sCfgKey::~sCfgKey(){
-	for (int p=0; p<parmsCnt; p++) delete parm[p];
-}
-bool sCfgKey::findParm(const char* pDesc_){
-	char pDesc[XMLKEY_PARM_NAME_MAXLEN];
-	UpperCase(pDesc_, pDesc);
+sCfgKey::sCfgKey(s0parmsdef, char* keyLine_) : s0(s0parmsval) {
 
-	for (int p=0; p<parmsCnt; p++) {
-		if (strcmp(pDesc, parm[p]->name)==0) {
-			currentParm=parm[p];
-			return true;
-		}
-	}
-	return false;
+	memcpy_s(name, XMLKEY_NAME_MAXLEN, &keyLine_[1], strlen(keyLine_)-2); name[strlen(keyLine_)-2]='\0';
+	parmsCnt=childrenCnt;
+
 }
+sCfgKey::~sCfgKey(){}
 
 sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 
@@ -111,92 +76,32 @@ sCfg::sCfg(s0parmsdef, const char* cfgFileFullName) : s0(s0parmsval) {
 	fopen_s(&cfgFile, cfgFileFullName, "r");
 	if (errno!=0) fail("Could not open configuration file %s . Error %d", cfgFileFullName, errno);
 
-	//-- load flat Keys and Parms strings
-	keysCnt=0;
-	fpos_t currentPos;  
-	currentKey = new sCfgKey();
-	char pname[XMLKEY_PARM_NAME_MAXLEN];
-	char pvalFull[XMLKEY_PARM_VAL_MAXCNT*XMLKEY_PARM_VAL_MAXLEN];
-
 	while (fgets(line, XMLFILE_LINE_MAXLEN, cfgFile)!=NULL) {
 		cleanLine(line);				//-- strip spaces & tabs
 		if (skipLine(line)) continue;	// empty line or comment
 
-		fgetpos(cfgFile, &currentPos);
 		if (isKeyStart(line)) {
 			//-- new sKey
-			key[keysCnt] = new sCfgKey(currentKey, line, currentPos);
-			//-- update current Key 
-			currentKey=key[keysCnt];
-			//-- update keysCnt
-			keysCnt++;
+			safespawn(currentChild, sCfgKey, newsname("tempKeyName"), dbg, line);
+
 		} else 	if (isKeyEnd(line)) {
 			//-- current key becomes current key's parent
-			currentKey=currentKey->parentKey;
+			currentChild=currentChild->parent;
 		} else {
 			//-- new sParm
-			if (!getValuePair(line, pname, pvalFull, '=')) fail("wrong parameter format: %s", line);
-			UpperCase(pvalFull, pvalFull);
-			currentKey->parm[currentKey->parmsCnt]= new sCfgParm(pname, pvalFull, currentPos);
-			currentKey->parmsCnt++;
-			currentKey->currentParm++;
+			safespawn(currentChild, sCfgParm, newsname("key[%d]->parm[%d]"), dbg, line);
 		}
 
 	}
 
 	//-- finally, set currentKey = root
-	currentKey=key[0];
-}
-sCfg::~sCfg() {
-	for (int k=0; k<keysCnt; k++) delete key[k];
+	currentChild=child[0];
 }
 
-bool sCfg::buildFullKey(const char* iDest_, char* oFullDest_) {
-	bool found=false;
+sCfg::~sCfg() {}
 
-	//-- first, establish key full name based on modifiers ('/','.', ... )
-	if (iDest_[0]=='.' && iDest_[1]=='.') {
-		currentKey=currentKey->parentKey;
-		if (strlen(iDest_)>2) {
-			sprintf_s(oFullDest_, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, &iDest_[3]);
-		} else {
-			found=true;
-		}
-	} else if (iDest_[0]=='/') {
-		if (strlen(iDest_)>1) {
-			strcpy_s(oFullDest_, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, iDest_);
-		} else {
-			currentKey=key[0]->parentKey;
-			found=true;
-		}
-	} else {
-		sprintf_s(oFullDest_, XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN, "%s/%s", currentKey->fname, iDest_);
-	}
-	return found;
-}
-
-bool sCfg::findKey(const char* dest_) {
-	char dest[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
-	char fname[XMLKEY_PATH_MAXLEN+XMLKEY_NAME_MAXLEN];
-
-	UpperCase(dest_, dest);
-	if (strcmp(dest, currentKey->fname)==0) return true;
-
-	//-- first, establish key full name based on modifiers ('/','.', ... ), then, find key using full name
-	bool found=buildFullKey(dest, fname);
-	if(!found) {
-		for (int k=0; k<keysCnt; k++) {
-			if (strcmp(fname, key[k]->fname)==0) {
-				currentKey = key[k];
-				found=true;
-				break;
-			}
-		}
-	}
-	return found;
-}
 void sCfg::setKey(const char* dest) {
-	if (!findKey(dest)) fail("could not find Key %s . currentKey = %s", dest, currentKey->fname);
+	if (!findChild(dest)) fail("could not find Key %s . currentKey = %s", dest, currentChild->fullName);
 }
 
 void sCfg::split(const char* fullDesc, char* oKeyDesc, char* oParmDesc) {
@@ -219,19 +124,19 @@ sDbg* sCfg::newdbg(char* cfgKeyName_) {
 	char outfilepath[MAX_PATH]; strcpy_s(outfilepath, MAX_PATH, outfilepath_); char* outfileP=&outfilepath[0];
 
 	//-- backup currentKey
-	sCfgKey* bkpKey=currentKey;
+	s0* bkpKey=currentChild;
 	//-- go to child Key
 	setKey(cfgKeyName_);
 	//-- find <Debugger> key
-	if (findKey("Debugger")) {
+	if (findChild("Debugger")) {
 		//-- if found, override default values
-		if (currentKey->findParm("Verbose")) currentKey->currentParm->getVal(&verbose_);
-		if (currentKey->findParm("ScreenOutput")) currentKey->currentParm->getVal(&dbgtoscreen_);
-		if (currentKey->findParm("FileOutput")) currentKey->currentParm->getVal(&dbgtofile_);
-		if (currentKey->findParm("OutFilePath")) currentKey->currentParm->getVal(&outfileP);
+		if (findChild("Verbose")) (((sCfgParm*)currentChild))->getVal(&verbose_);
+		if (findChild("ScreenOutput")) ((sCfgParm*)currentChild)->getVal(&dbgtoscreen_);
+		if (findChild("FileOutput")) ((sCfgParm*)currentChild)->getVal(&dbgtofile_);
+		if (findChild("OutFilePath")) ((sCfgParm*)currentChild)->getVal(&outfileP);
 	}
 	//-- restore original key
-	currentKey=bkpKey;
+	currentChild=bkpKey;
 
 	//-- spawn and return new debugger
 	return (new sDbg(verbose_, dbgtoscreen_, dbgtofile_, outfileP));

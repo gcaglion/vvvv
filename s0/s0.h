@@ -6,6 +6,7 @@
 
 #define OBJ_NAME_MAXLEN 1024
 #define OBJ_MAX_CHILDREN 64
+#define OBJ_MAX_DEPTH	 16
 //--
 #define OBJ_PARMS_MAXCNT		32
 #define OBJ_PARMS_MASK_MAXLEN	125
@@ -22,16 +23,21 @@ struct sName {
 struct s0 {
 
 	char name[OBJ_NAME_MAXLEN];
+	char fullName[OBJ_NAME_MAXLEN*OBJ_MAX_DEPTH];
 	s0* parent;
 	char parentFunc[2048];
 	int stackLevel;
 	int childrenCnt;
 	s0* child[OBJ_MAX_CHILDREN];
+	s0* currentChild;
 	//-- debugging
 	sDbg* dbg;
 	
 	EXPORT s0(s0parmsdef);
 	EXPORT virtual ~s0();
+
+	bool buildfullName(const char* name_=nullptr);
+	EXPORT bool findChild(const char* childName_);
 
 	template<class className, class methodName, class ...methodArgs> void _callM(const char* callerFunc_, char* objVarName_, className* obj, char* metS, methodName met, methodArgs... mArgs) {
 		svard* callSvard=new svard();
@@ -60,6 +66,7 @@ struct s0 {
 			retObj = new objT(this, childSname_, childDbg_, childCargs...);
 			info("%s SUCCESS : %s", name, cmd);
 			child[childrenCnt]=retObj;
+			currentChild=child[childrenCnt];
 			childrenCnt++;
 		}
 		catch (std::exception exc) {

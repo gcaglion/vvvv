@@ -37,7 +37,9 @@ struct sRoot : s0 {
 		safecall(sCfg, xmlForecasterCfg, setKey, "../Engine");
 
 		int maxEpochs;
-		getParmVal(maxEpochs, xmlForecasterCfg, "Custom/Core0/Training/MaxEpochs");
+		if (xmlForecasterCfg->findChild("Custom/Core0/Training/MaxEpochs")) {
+			((sCfgParm*)(xmlForecasterCfg->currentChild))->getVal(&maxEpochs);
+		}
 
 		safespawn(frc1, sForecaster, newsname("Forecaster%d", 99), xmlForecasterCfg->newdbg("/Forecaster"), 99);
 		safespawn(dbc1, sDBConnection, newsname("DBConnection%d", 1), xmlForecasterCfg->newdbg("/Forecaster/Data/Train/DataSet/TimeSerie/DataSource/FXData/DBConnection"), "system", "manager", "Algo");

@@ -8,7 +8,7 @@ sDBConnection::sDBConnection(s0parmsdef, const char* username, const char* passw
 	DBCtx=NULL;
 }
 sDBConnection::sDBConnection(s0parmsdef, sCfgKey* cfgKey_) : s0(s0parmsval) {
-	cfgKey_->findParm("DBuser");
+	cfgKey_->findChild("DBuser");
 }
 
 sDBConnection::~sDBConnection() {
