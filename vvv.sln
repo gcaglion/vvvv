@@ -36,6 +36,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConfigMgr", "ConfigMgr\Conf
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DBConnection", "DBConnection\DBConnection.vcxproj", "{6D8A3FE3-46F1-47F8-B201-5E733732D091}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F74613D8-F080-4B06-9D51-3963DE071E4C} = {F74613D8-F080-4B06-9D51-3963DE071E4C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OraUtils", "OraUtils\OraUtils.vcxproj", "{0C5B056C-F33D-4BA0-8572-AC1E3DEF3FBD}"
 EndProject
